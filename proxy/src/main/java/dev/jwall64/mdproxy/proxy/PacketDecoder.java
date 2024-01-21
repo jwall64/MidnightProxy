@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy;
+package dev.jwall64.mdproxy.proxy;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import io.netty.buffer.ByteBuf;

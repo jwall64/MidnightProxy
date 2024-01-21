@@ -2,6 +2,7 @@ package dev.jwall64.mdproxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import dev.jwall64.mdproxy.proxy.ProxyServer;
 
 public class Main {
 
