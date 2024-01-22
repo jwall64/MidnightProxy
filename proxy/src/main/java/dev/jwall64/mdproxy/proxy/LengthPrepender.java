@@ -3,6 +3,7 @@ package dev.jwall64.mdproxy.proxy;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.MessageToMessageEncoder;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
