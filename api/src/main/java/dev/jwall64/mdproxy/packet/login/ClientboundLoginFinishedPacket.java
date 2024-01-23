@@ -1,20 +1,24 @@
-package dev.jwall64.mdproxy.packet;
+package dev.jwall64.mdproxy.packet.login;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.mojang.authlib.properties.PropertyMap;
 import io.netty.buffer.ByteBuf;
+import dev.jwall64.mdproxy.packet.Packet;
+import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 import java.util.Map;
 
 public record ClientboundLoginFinishedPacket(GameProfile gameProfile) implements Packet {
 
-    public static final int ID = 2;
+    public static final PacketType TYPE = PacketType.of(2, buf -> {
+        throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
+    });
 
     @Override
-    public int getId() {
-        return ID;
+    public PacketType getType() {
+        return TYPE;
     }
 
     @Override

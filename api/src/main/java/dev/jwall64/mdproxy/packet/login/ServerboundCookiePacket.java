@@ -1,6 +1,8 @@
-package dev.jwall64.mdproxy.packet;
+package dev.jwall64.mdproxy.packet.login;
 
 import io.netty.buffer.ByteBuf;
+import dev.jwall64.mdproxy.packet.Packet;
+import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 import dev.jwall64.midnightlib.registry.Identifier;
 
@@ -8,11 +10,12 @@ import java.util.Optional;
 
 public record ServerboundCookiePacket(Identifier key, Optional<ByteBuf> data) implements Packet {
 
-    public static final int ID = 4;
+
+    public static final PacketType TYPE = PacketType.of(4, ServerboundEncryptionPacket::read);
 
     @Override
-    public int getId() {
-        return ID;
+    public PacketType getType() {
+        return TYPE;
     }
 
     @Override

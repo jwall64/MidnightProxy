@@ -1,17 +1,20 @@
-package dev.jwall64.mdproxy.packet;
+package dev.jwall64.mdproxy.packet.login;
 
 import io.netty.buffer.ByteBuf;
+import dev.jwall64.mdproxy.packet.Packet;
+import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 import java.util.UUID;
 
 public record ServerboundLoginPacket(String username, UUID uuid) implements Packet {
 
-    public static final int ID = 0;
+    public static final PacketType TYPE = PacketType.of(0, ServerboundLoginPacket::read);
 
     @Override
-    public int getId() {
-        return ID;
+    public PacketType getType() {
+        return TYPE;
     }
 
     @Override

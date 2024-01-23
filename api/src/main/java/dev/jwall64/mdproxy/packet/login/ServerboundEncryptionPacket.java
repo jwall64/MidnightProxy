@@ -1,6 +1,8 @@
-package dev.jwall64.mdproxy.packet;
+package dev.jwall64.mdproxy.packet.login;
 
 import io.netty.buffer.ByteBuf;
+import dev.jwall64.mdproxy.packet.Packet;
+import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
@@ -9,16 +11,17 @@ import java.security.PublicKey;
 
 public record ServerboundEncryptionPacket(byte[] sharedSecret, byte[] verifyToken) implements Packet {
 
-    public static final int ID = 1;
-
     public ServerboundEncryptionPacket(SecretKey key, PublicKey publicKey, byte[] verifyBytes) {
         this(CryptUtil.encryptData(publicKey, key.getEncoded()), CryptUtil.encryptData(publicKey, verifyBytes));
     }
 
+    public static final PacketType TYPE = PacketType.of(1, ServerboundEncryptionPacket::read);
+
     @Override
-    public int getId() {
-        return ID;
+    public PacketType getType() {
+        return TYPE;
     }
+
 
     @Override
     public void write(ByteBuf buf) {

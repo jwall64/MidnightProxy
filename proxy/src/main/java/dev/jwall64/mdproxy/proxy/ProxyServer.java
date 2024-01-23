@@ -14,8 +14,10 @@ import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdproxy.Backend;
+import dev.jwall64.mdproxy.packet.PacketRegistry;
 import dev.jwall64.mdproxy.util.CryptUtil;
 
+import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.KeyPair;
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class ProxyServer {
 
     public ProxyServer(FileWrapper<ConfigObject> config) {
 
-        this.eventLoopGroup = new NioEventLoopGroup(1);
+        this.eventLoopGroup = new NioEventLoopGroup();
 
         this.config = config;
         reload();
@@ -51,34 +53,24 @@ public class ProxyServer {
 
     public void startup() throws Exception {
 
-
         try {
             ServerBootstrap bootstrap = new ServerBootstrap()
-                    .channel(NioServerSocketChannel.class)
-                    .childOption(ChannelOption.SO_KEEPALIVE, true)
+                    .channelFactory(NioServerSocketChannel::new)
                     .childOption(ChannelOption.TCP_NODELAY, true)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel socketChannel) throws Exception {
+                    .childOption(ChannelOption.IP_TOS, 0x18)
+                    .childHandler(new ProxyChannelInitializer(this))
+                    .group(eventLoopGroup)
+                    .localAddress(new InetSocketAddress(port));
 
-                            ChannelPipeline p = socketChannel.pipeline();
-
-                            p.addLast("splitter", new PacketSplitter());
-                            p.addLast(new FlowControlHandler());
-                            p.addLast("decoder", new PacketDecoder());
-                            p.addLast("prepender", new LengthPrepender());
-                            p.addLast("encoder", new PacketEncoder());
-                            p.addLast("handler", new ClientPacketHandler(ProxyServer.this));
-
-                        }
-                    });
-
-
-            channel = bootstrap.group(eventLoopGroup).bind(port).syncUninterruptibly();
+            channel = bootstrap.bind().syncUninterruptibly();
+            channel.channel().closeFuture().sync();
 
         } catch (Exception ex) {
 
-            LOGGER.error("An error occurred while loading the server!");
+            LOGGER.error("An error occurred while the server was running!", ex);
+
+        } finally {
+            shutdown();
         }
     }
 
