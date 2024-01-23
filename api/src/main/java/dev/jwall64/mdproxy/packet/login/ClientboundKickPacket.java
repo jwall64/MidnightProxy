@@ -1,10 +1,7 @@
 package dev.jwall64.mdproxy.packet.login;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mcore.text.Component;
-import dev.jwall64.mcore.text.ModernSerializer;
-import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;

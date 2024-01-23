@@ -3,7 +3,6 @@ package dev.jwall64.mdproxy.packet.login;
 import io.netty.buffer.ByteBuf;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
-import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 import java.util.UUID;
