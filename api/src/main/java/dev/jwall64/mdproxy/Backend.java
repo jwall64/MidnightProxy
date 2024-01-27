@@ -5,6 +5,11 @@ import org.jetbrains.annotations.Nullable;
 import dev.jwall64.mdcfg.serializer.NumberSerializer;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
+import dev.jwall64.midnightlib.registry.Identifier;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 public record Backend(String hostname, int port, int priority, @Nullable WrappedRequirement requirement, boolean redirect) implements Comparable<Backend> {
 
@@ -21,5 +26,37 @@ public record Backend(String hostname, int port, int priority, @Nullable Wrapped
             Serializer.BOOLEAN.entry("redirect", Backend::redirect).orElse(false),
             Backend::new
     );
+
+    public Collection<Identifier> getRequiredCookies() {
+
+        if(requirement == null) return List.of();
+        Collection<Identifier> out = requirement.getRequiredCookies();
+
+        return out == null ? List.of() : out;
+
+    }
+
+    public boolean canCheck(ClientConnection conn) {
+
+        if(redirect && !conn.canTransfer()) {
+            return false;
+        }
+        if(requirement != null) {
+            if(requirement.requiresAuth() && !conn.authenticated()) {
+                return false;
+            }
+            return !requirement.requiresCookies() || conn.cookiesAvailable();
+        }
+
+        return true;
+    }
+
+    public boolean canUse(ClientConnection conn) {
+
+        if(!canCheck(conn)) {
+            return false;
+        }
+        return requirement == null || requirement.check(conn);
+    }
 
 }

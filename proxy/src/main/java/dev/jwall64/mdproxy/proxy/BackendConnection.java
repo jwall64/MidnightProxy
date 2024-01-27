@@ -6,8 +6,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.haproxy.HAProxyMessageEncoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import dev.jwall64.mdproxy.packet.PacketFlow;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
@@ -42,7 +40,7 @@ public class BackendConnection {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ch.pipeline()
-                                .addLast("prepender", new LengthPrepender())
+                                .addLast("prepender", new FrameEncoder())
                                 .addLast("encoder", new PacketEncoder());
 
                         if(haproxy) {

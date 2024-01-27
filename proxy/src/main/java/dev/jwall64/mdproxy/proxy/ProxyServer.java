@@ -14,12 +14,14 @@ import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdproxy.Backend;
+import dev.jwall64.mdproxy.ClientConnectionImpl;
 import dev.jwall64.mdproxy.util.CryptUtil;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ProxyServer {
@@ -36,6 +38,7 @@ public class ProxyServer {
     private final List<Backend> backends = new ArrayList<>();
 
     private ChannelFuture channel;
+    private final HashMap<String, ClientConnectionImpl> awaitingReconnect = new HashMap<>();
 
     public ProxyServer(FileWrapper<ConfigObject> config) {
 
@@ -90,6 +93,14 @@ public class ProxyServer {
 
         this.backends.clear();
         this.backends.addAll(getConfig().getListFiltered("backends", Backend.SERIALIZER));
+    }
+
+    public ClientConnectionImpl getReconnectData(String id) {
+        return awaitingReconnect.get(id);
+    }
+
+    public void clearReconnect(String id) {
+        awaitingReconnect.remove(id);
     }
 
     public KeyPair getKeyPair() {
