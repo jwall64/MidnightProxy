@@ -2,6 +2,8 @@ package dev.jwall64.mdproxy.packet;
 
 import dev.jwall64.mdproxy.packet.config.ClientboundSetCookiePacket;
 import dev.jwall64.mdproxy.packet.config.ClientboundTransferPacket;
+import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
+import dev.jwall64.mdproxy.packet.config.ServerboundSettingsPacket;
 import dev.jwall64.mdproxy.packet.login.*;
 import dev.jwall64.mdproxy.packet.status.ClientboundStatusPacket;
 import dev.jwall64.mdproxy.packet.status.ServerboundStatusPacket;
@@ -39,6 +41,7 @@ public class PacketRegistry {
     public static final PacketRegistry LOGIN_SERVERBOUND = new PacketRegistry(ServerboundLoginPacket.TYPE, ServerboundEncryptionPacket.TYPE, ServerboundLoginFinishedPacket.TYPE, ServerboundCookiePacket.TYPE);
 
     public static final PacketRegistry CONFIG_CLIENTBOUND = new PacketRegistry(ClientboundSetCookiePacket.TYPE, ClientboundTransferPacket.TYPE);
+    public static final PacketRegistry CONFIG_SERVERBOUND = new PacketRegistry(ServerboundSettingsPacket.TYPE, ServerboundPluginMessagePacket.TYPE);
 
     public static PacketRegistry getRegistry(PacketFlow flow, ProtocolPhase phase) {
 
@@ -48,7 +51,7 @@ public class PacketRegistry {
                 case HANDSHAKE -> PacketRegistry.HANDSHAKE;
                 case STATUS -> PacketRegistry.STATUS_SERVERBOUND;
                 case LOGIN -> PacketRegistry.LOGIN_SERVERBOUND;
-                case CONFIG -> new PacketRegistry();
+                case CONFIG -> PacketRegistry.CONFIG_SERVERBOUND;
             };
 
         } else {
