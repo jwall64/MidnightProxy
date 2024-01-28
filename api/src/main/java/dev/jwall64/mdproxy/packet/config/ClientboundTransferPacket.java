@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
-import dev.jwall64.midnightlib.registry.Identifier;
 
 public record ClientboundTransferPacket(String host, int port) implements Packet {
 

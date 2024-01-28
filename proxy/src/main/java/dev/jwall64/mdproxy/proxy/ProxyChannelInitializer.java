@@ -2,9 +2,6 @@ package dev.jwall64.mdproxy.proxy;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import io.netty.handler.flow.FlowControlHandler;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
 
 public class ProxyChannelInitializer extends ChannelInitializer<Channel> {
