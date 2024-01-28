@@ -1,18 +1,25 @@
 package dev.jwall64.mdproxy.packet.status;
 
 import io.netty.buffer.ByteBuf;
+import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 
-public class ServerboundStatusPacket implements Packet {
+public class ServerboundStatusPacket implements Packet<ServerboundPacketHandler> {
 
-    public static final PacketType TYPE = PacketType.of(0, buf -> new ServerboundStatusPacket());
+    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(0, (ver, buf) -> new ServerboundStatusPacket());
 
     @Override
-    public PacketType getType() {
+    public PacketType<ServerboundPacketHandler> getType() {
         return TYPE;
     }
 
     @Override
-    public void write(ByteBuf buf) { }
+    public void write(GameVersion ver, ByteBuf buf) { }
+
+    @Override
+    public void handle(ServerboundPacketHandler handler) {
+        handler.handle(this);
+    }
 }

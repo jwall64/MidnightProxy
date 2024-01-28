@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
-import dev.jwall64.mdproxy.Backend;
-import dev.jwall64.mdproxy.ReconnectCache;
-import dev.jwall64.mdproxy.netty.ProxyChannelInitializer;
+import dev.jwall64.mdproxy.netty.ClientChannelInitializer;
 import dev.jwall64.mdproxy.util.CryptUtil;
 
 import java.net.InetSocketAddress;
@@ -62,7 +60,7 @@ public class ProxyServer {
                     .channelFactory(NioServerSocketChannel::new)
                     .childOption(ChannelOption.TCP_NODELAY, true)
                     .childOption(ChannelOption.IP_TOS, 0x18)
-                    .childHandler(new ProxyChannelInitializer(this))
+                    .childHandler(new ClientChannelInitializer(this))
                     .group(eventLoopGroup)
                     .localAddress(new InetSocketAddress(port));
 
