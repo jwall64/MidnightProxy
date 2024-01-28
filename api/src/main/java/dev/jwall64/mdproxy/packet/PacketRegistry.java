@@ -2,10 +2,7 @@ package dev.jwall64.mdproxy.packet;
 
 import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mdproxy.packet.config.ClientboundSetCookiePacket;
-import dev.jwall64.mdproxy.packet.config.ClientboundTransferPacket;
-import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
-import dev.jwall64.mdproxy.packet.config.ServerboundSettingsPacket;
+import dev.jwall64.mdproxy.packet.config.*;
 import dev.jwall64.mdproxy.packet.login.*;
 import dev.jwall64.mdproxy.packet.status.ClientboundPingPacket;
 import dev.jwall64.mdproxy.packet.status.ClientboundStatusPacket;
@@ -66,7 +63,7 @@ public class PacketRegistry<T> {
     private static final List<PacketType<ClientboundPacketHandler>> LOGIN_CLIENTBOUND = List.of(ClientboundKickPacket.TYPE, ClientboundEncryptionPacket.TYPE, ClientboundLoginFinishedPacket.TYPE, ClientboundCookieRequestPacket.TYPE);
     private static final List<PacketType<ServerboundPacketHandler>> LOGIN_SERVERBOUND = List.of(ServerboundLoginPacket.TYPE, ServerboundEncryptionPacket.TYPE, ServerboundLoginFinishedPacket.TYPE, ServerboundCookiePacket.TYPE);
 
-    private static final List<PacketType<ClientboundPacketHandler>> CONFIG_CLIENTBOUND = List.of(ClientboundSetCookiePacket.TYPE, ClientboundTransferPacket.TYPE);
+    private static final List<PacketType<ClientboundPacketHandler>> CONFIG_CLIENTBOUND = List.of(ClientboundSetCookiePacket.TYPE, ClientboundTransferPacket.TYPE, ClientboundConfigKickPacket.TYPE, ClientboundPluginMessagePacket.TYPE);
     private static final List<PacketType<ServerboundPacketHandler>> CONFIG_SERVERBOUND = List.of(ServerboundSettingsPacket.TYPE, ServerboundPluginMessagePacket.TYPE);
 
     public static PacketRegistry<ServerboundPacketHandler> getServerbound(GameVersion version, ProtocolPhase phase) {

@@ -5,20 +5,32 @@ import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
+import dev.jwall64.mdproxy.util.PacketBufferUtil;
+import dev.jwall64.midnightlib.registry.Identifier;
 
-public class ServerboundPluginMessagePacket implements Packet<ServerboundPacketHandler> {
+public record ServerboundPluginMessagePacket(Identifier channel, ByteBuf data) implements Packet<ServerboundPacketHandler> {
 
-    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(ver -> ver.hasFeature(GameVersion.Feature.TRANSFER_PACKETS) ? 2 : 1, (ver, buf) -> new ServerboundPluginMessagePacket());
+    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(ver -> ver.hasFeature(GameVersion.Feature.TRANSFER_PACKETS) ? 2 : 1, ServerboundPluginMessagePacket::read);
+
     @Override
     public PacketType<ServerboundPacketHandler> getType() {
         return TYPE;
     }
 
     @Override
-    public void write(GameVersion version, ByteBuf buf) { }
+    public void write(GameVersion version, ByteBuf buf) {
+        PacketBufferUtil.writeUtf(buf, channel.toString());
+        buf.writeBytes(data);
+    }
 
     @Override
     public void handle(ServerboundPacketHandler handler) {
         handler.handle(this);
     }
+
+    public static ServerboundPluginMessagePacket read(GameVersion version, ByteBuf buf) {
+        Identifier id = Identifier.parseOrDefault(PacketBufferUtil.readUtf(buf), "minecraft");
+        return new ServerboundPluginMessagePacket(id, buf);
+    }
+
 }
