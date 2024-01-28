@@ -11,7 +11,6 @@ import dev.jwall64.mdcfg.codec.FileCodecRegistry;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
-import dev.jwall64.mdproxy.proxy.ProxyServer;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -27,7 +26,8 @@ public class Main {
             .with("backends", new ConfigList())
             .with("online_mode", true)
             .with("reconnect_threads", 4)
-            .with("reconnect_timeout", 3000);
+            .with("reconnect_timeout", 3000)
+            .with("client_timeout", 15000);
 
 
     public static void main(String[] args) {

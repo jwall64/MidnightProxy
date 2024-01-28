@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.proxy;
+package dev.jwall64.mdproxy;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -6,6 +6,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.haproxy.HAProxyMessageEncoder;
+import dev.jwall64.mdproxy.netty.FrameEncoder;
+import dev.jwall64.mdproxy.netty.PacketEncoder;
+import dev.jwall64.mdproxy.netty.PacketForwarder;
 import dev.jwall64.mdproxy.packet.PacketFlow;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;

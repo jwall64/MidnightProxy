@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.proxy;
+package dev.jwall64.mdproxy;
 
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
@@ -14,15 +14,14 @@ import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdproxy.Backend;
-import dev.jwall64.mdproxy.ClientConnectionImpl;
 import dev.jwall64.mdproxy.ReconnectCache;
+import dev.jwall64.mdproxy.netty.ProxyChannelInitializer;
 import dev.jwall64.mdproxy.util.CryptUtil;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.security.KeyPair;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class ProxyServer {
@@ -36,8 +35,9 @@ public class ProxyServer {
     private final ReconnectCache reconnectCache;
     private final List<Backend> backends = new ArrayList<>();
 
-    private boolean requireAuth;
     private final int port;
+    private final int clientTimeout;
+    private boolean requireAuth;
     private ChannelFuture channel;
 
     public ProxyServer(FileWrapper<ConfigObject> config) {
@@ -48,6 +48,7 @@ public class ProxyServer {
         reload();
 
         this.port = getConfig().getInt("port");
+        this.clientTimeout = getConfig().getInt("client_timeout");
 
         this.keyPair = CryptUtil.generateKeyPair();
         this.minecraft = new YggdrasilAuthenticationService(Proxy.NO_PROXY).createMinecraftSessionService();
@@ -110,6 +111,10 @@ public class ProxyServer {
 
     public int getPort() {
         return port;
+    }
+
+    public int getClientTimeout() {
+        return clientTimeout;
     }
 
     public List<Backend> getBackends() {

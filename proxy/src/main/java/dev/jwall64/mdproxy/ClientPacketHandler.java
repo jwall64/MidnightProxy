@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.proxy;
+package dev.jwall64.mdproxy;
 
 import com.google.common.primitives.Ints;
 import com.mojang.authlib.GameProfile;
@@ -10,8 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mcore.text.Component;
-import dev.jwall64.mdproxy.Backend;
-import dev.jwall64.mdproxy.ClientConnectionImpl;
+import dev.jwall64.mdproxy.netty.*;
 import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.packet.config.ClientboundConfigKickPacket;
 import dev.jwall64.mdproxy.packet.config.ClientboundSetCookiePacket;
@@ -250,7 +249,7 @@ public class ClientPacketHandler extends SimpleChannelInboundHandler<Packet> {
             Backend b = findBackend();
 
             if(b == null) {
-                LOGGER.warn("Unable to find backend after login!");
+                LOGGER.warn("Unable to find backend server for " + getUsername() + " after login!");
                 disconnect(Component.text("Unable to find backend server!"));
                 return;
             }
@@ -367,11 +366,14 @@ public class ClientPacketHandler extends SimpleChannelInboundHandler<Packet> {
             channel.pipeline().remove("decrypt");
             channel.pipeline().remove("encrypt");
         }
+
+        channel.config().setAutoRead(false);
     }
 
     private void setupForwarding(Channel forward) {
 
         channel.pipeline().addLast("forward", new PacketForwarder(forward));
+        channel.config().setAutoRead(true);
     }
 
     public String getUsername() {

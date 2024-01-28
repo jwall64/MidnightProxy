@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.proxy;
+package dev.jwall64.mdproxy.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
