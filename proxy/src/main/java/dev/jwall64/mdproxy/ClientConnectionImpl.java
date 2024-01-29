@@ -1,5 +1,6 @@
 package dev.jwall64.mdproxy;
 
+import dev.jwall64.mcore.lang.LocaleHolder;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
 import dev.jwall64.midnightlib.registry.Identifier;
@@ -7,7 +8,7 @@ import dev.jwall64.midnightlib.registry.Identifier;
 import java.util.Map;
 import java.util.UUID;
 
-public class ClientConnectionImpl implements ClientConnection {
+public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
 
     private final int protocolVersion;
     private final String hostname;
@@ -118,5 +119,10 @@ public class ClientConnectionImpl implements ClientConnection {
 
     public ClientConnectionImpl withLocale(String locale) {
         return new ClientConnectionImpl(protocolVersion, hostname, port, username, uuid, auth, cookies, transferable, locale);
+    }
+
+    @Override
+    public String getLanguage() {
+        return locale == null ? "en_us" : locale;
     }
 }
