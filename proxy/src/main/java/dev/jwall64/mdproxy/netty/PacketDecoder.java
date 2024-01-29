@@ -7,8 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
-import dev.jwall64.mdproxy.packet.PacketType;
-import dev.jwall64.mdproxy.packet.UnknownPacket;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 import java.util.List;
@@ -34,7 +32,7 @@ public class PacketDecoder<T> extends ByteToMessageDecoder {
         Packet<T> p = registry.read(id, bytes);
         if(p == null) {
             LOGGER.warn("Found unknown packet with id " + id);
-            out.add(new UnknownPacket(id, bytes));
+            bytes.clear();
             return;
         }
 
