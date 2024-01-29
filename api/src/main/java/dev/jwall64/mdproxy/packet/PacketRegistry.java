@@ -6,8 +6,8 @@ import dev.jwall64.mdproxy.packet.config.*;
 import dev.jwall64.mdproxy.packet.login.*;
 import dev.jwall64.mdproxy.packet.status.ClientboundPingPacket;
 import dev.jwall64.mdproxy.packet.status.ClientboundStatusPacket;
-import dev.jwall64.mdproxy.packet.status.ServerboundStatusPacket;
 import dev.jwall64.mdproxy.packet.status.ServerboundPingPacket;
+import dev.jwall64.mdproxy.packet.status.ServerboundStatusPacket;
 
 import java.util.Collection;
 import java.util.HashMap;

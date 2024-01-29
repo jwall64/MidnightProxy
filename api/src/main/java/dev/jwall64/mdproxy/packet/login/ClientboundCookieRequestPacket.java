@@ -5,7 +5,6 @@ import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
-import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 import dev.jwall64.midnightlib.registry.Identifier;
 
