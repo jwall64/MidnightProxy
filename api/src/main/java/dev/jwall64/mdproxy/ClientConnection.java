@@ -1,5 +1,6 @@
 package dev.jwall64.mdproxy;
 
+import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
 import dev.jwall64.midnightlib.registry.Identifier;
@@ -19,6 +20,7 @@ public interface ClientConnection {
     String hostname();
 
     int port();
+    int protocolVersion();
 
     String username();
 
