@@ -7,16 +7,20 @@ import dev.jwall64.mcore.lang.LangManager;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
+import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.ReloadCommand;
 import dev.jwall64.mdproxy.command.StopCommand;
 import dev.jwall64.mdproxy.netty.ConnectionManager;
 import dev.jwall64.mdproxy.util.CryptUtil;
+import dev.jwall64.midnightlib.registry.RegistryBase;
 import dev.jwall64.midnightlib.registry.StringRegistry;
 
 import java.security.KeyPair;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class ProxyServer implements Proxy {
 
@@ -27,8 +31,8 @@ public class ProxyServer implements Proxy {
     private final FileWrapper<ConfigObject> config;
     private final ReconnectCache reconnectCache;
     private final StringRegistry<CommandExecutor> commands;
-    private final List<Backend> backends = new ArrayList<>();
     private final List<StatusEntry> statusEntries = new ArrayList<>();
+    private final HashMap<UUID, ClientConnectionImpl> connected = new HashMap<>();
     private final ConnectionManager listener;
     private final ConsoleHandler console;
     private final LangManager manager;
@@ -38,6 +42,7 @@ public class ProxyServer implements Proxy {
     private int backendTimeout;
     private int playerLimit;
     private boolean requireAuth;
+    private RegistryBase<String, Backend> backends = new StringRegistry<>();
 
     public ProxyServer(FileWrapper<ConfigObject> config, LangManager manager) {
 
@@ -95,8 +100,15 @@ public class ProxyServer implements Proxy {
         this.backendTimeout = getConfig().getInt("backend_timeout");
         this.playerLimit = getConfig().getInt("player_limit");
 
-        this.backends.clear();
-        this.backends.addAll(getConfig().getListFiltered("backends", Backend.SERIALIZER, LOGGER::warn));
+        StringRegistry<Backend> backends = new StringRegistry<>();
+
+        Backend.SERIALIZER.filteredMapOf(
+                (key, err) -> LOGGER.warn("Could not deserialize a Backend with id " + key + "! " + err)
+        ).deserialize(ConfigContext.INSTANCE, getConfig().getSection("backends"))
+                .getOrThrow()
+                .forEach(backends::register);
+
+        this.backends = backends.freeze();
 
         this.statusEntries.clear();
         this.statusEntries.addAll(getConfig().getListFiltered("status", StatusEntry.SERIALIZER, LOGGER::warn));
@@ -108,9 +120,20 @@ public class ProxyServer implements Proxy {
     }
 
     @Override
-    public List<Backend> getBackends() {
+    public RegistryBase<String, Backend> getBackends() {
         return backends;
     }
+
+    @Override
+    public List<StatusEntry> getStatusEntries() {
+        return statusEntries;
+    }
+
+    @Override
+    public IconCache getIconCache() {
+        return null;
+    }
+
 
     @Override
     public boolean requiresAuth() {
@@ -124,7 +147,7 @@ public class ProxyServer implements Proxy {
 
     @Override
     public int getOnlinePlayers() {
-        return listener.getConnectedClients();
+        return connected.size();
     }
 
     @Override
@@ -135,6 +158,25 @@ public class ProxyServer implements Proxy {
     @Override
     public boolean bypassesPlayerLimit(PlayerInfo info) {
         return false;
+    }
+
+    public void addPlayer(ClientConnectionImpl conn) {
+
+        if(!conn.playerInfoAvailable()) {
+            throw new IllegalStateException("Attempt to add player before connection!");
+        }
+
+        ClientConnectionImpl old = connected.put(conn.uuid(), conn);
+        if(old != null) {
+            old.disconnect();
+        }
+    }
+
+    public void removePlayer(UUID uuid) {
+        ClientConnectionImpl old = connected.remove(uuid);
+        if(old != null) {
+            old.disconnect();
+        }
     }
 
     public ReconnectCache getReconnectCache() {
