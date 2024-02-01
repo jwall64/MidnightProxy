@@ -15,12 +15,12 @@ repositories {
 
 dependencies {
 
-    api("dev.jwall64:midnightcfg-api:2.0.0-SNAPSHOT")
-    api("dev.jwall64:midnightcfg-codec-json:2.0.0-SNAPSHOT")
-    api("dev.jwall64:midnightcfg-codec-nbt:2.0.0-SNAPSHOT")
-    api("dev.jwall64:midnightlib:1.5.0-SNAPSHOT")
+    api("dev.jwall64:midnightcfg-api:2.0.0")
+    api("dev.jwall64:midnightcfg-codec-json:2.0.0")
+    api("dev.jwall64:midnightcfg-codec-nbt:2.0.0")
+    api("dev.jwall64:midnightlib:1.5.0")
 
-    api("dev.jwall64:midnightcore-common:2.0.0-SNAPSHOT")
+    api("dev.jwall64:midnightcore-common:2.0.0-pre6")
 
     api("io.netty:netty-codec:4.1.105.Final")
     api("io.netty:netty-buffer:4.1.105.Final")

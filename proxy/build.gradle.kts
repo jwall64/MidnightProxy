@@ -29,11 +29,11 @@ dependencies {
 
     implementation(project(":api"))
 
-    implementation("dev.jwall64:midnightcfg-api:2.0.0-SNAPSHOT")
-    implementation("dev.jwall64:midnightcfg-codec-json:2.0.0-SNAPSHOT")
-    implementation("dev.jwall64:midnightlib:1.5.0-SNAPSHOT")
+    implementation("dev.jwall64:midnightcfg-api:2.0.0")
+    implementation("dev.jwall64:midnightcfg-codec-json:2.0.0")
+    implementation("dev.jwall64:midnightlib:1.5.0")
 
-    implementation("dev.jwall64:midnightcore-common:2.0.0-SNAPSHOT")
+    implementation("dev.jwall64:midnightcore-common:2.0.0-pre6")
 
     implementation("io.netty:netty-all:4.1.105.Final")
 
