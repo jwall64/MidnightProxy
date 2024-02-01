@@ -31,7 +31,7 @@ dependencies {
 
     implementation("dev.jwall64:midnightcfg-api:2.0.0-SNAPSHOT")
     implementation("dev.jwall64:midnightcfg-codec-json:2.0.0-SNAPSHOT")
-    implementation("dev.jwall64:midnightlib:1.5.0-SNAPSHOT")
+    implementation("dev.jwall64:midnightlib:1.6.0-SNAPSHOT")
 
     implementation("dev.jwall64:midnightcore-common:2.0.0-SNAPSHOT")
 
