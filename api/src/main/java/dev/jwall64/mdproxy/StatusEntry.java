@@ -7,6 +7,7 @@ import dev.jwall64.mcore.text.ModernSerializer;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
+import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
 
 import java.util.Collection;
 import java.util.List;
@@ -76,7 +77,7 @@ public record StatusEntry(int priority, Integer playersOverride, Integer maxPlay
 
     public boolean canUse(ClientConnection conn) {
 
-        return requirement == null || requirement.test(conn) == TestResult.PASS;
+        return requirement == null || requirement.test(new ConnectionContext(conn)) == TestResult.PASS;
     }
 
     public static final Serializer<StatusEntry> SERIALIZER = ObjectSerializer.create(

@@ -3,23 +3,19 @@ package dev.jwall64.mdproxy.requirement;
 import dev.jwall64.mdcfg.serializer.SerializeContext;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
-import dev.jwall64.mdproxy.ClientConnection;
+import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.registry.Identifier;
 
 import java.util.Collection;
 import java.util.function.Predicate;
 
-public abstract class ConnectionCheck implements Predicate<ClientConnection> {
+public abstract class ConnectionCheck implements Predicate<ConnectionContext> {
 
     private final boolean requiresAuth;
-    private final boolean requiresCookies;
-    private final boolean requiresLocale;
     private final Collection<Identifier> cookies;
 
-    protected ConnectionCheck(boolean requiresAuth, boolean requiresCookies, boolean requiresLocale, Collection<Identifier> cookies) {
+    protected ConnectionCheck(boolean requiresAuth, Collection<Identifier> cookies) {
         this.requiresAuth = requiresAuth;
-        this.requiresCookies = requiresCookies;
-        this.requiresLocale = requiresLocale;
         this.cookies = cookies;
     }
 
@@ -27,16 +23,8 @@ public abstract class ConnectionCheck implements Predicate<ClientConnection> {
         return requiresAuth;
     }
 
-    public boolean requiresCookies() {
-        return requiresCookies;
-    }
-
     public Collection<Identifier> getRequiredCookies() {
         return cookies;
-    }
-
-    public boolean requiresLocale() {
-        return requiresLocale;
     }
 
     public static <T extends ConnectionCheck> Serializer<ConnectionCheck> forClass(Class<T> clazz, Serializer<T> in) {

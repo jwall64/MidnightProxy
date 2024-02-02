@@ -2,7 +2,7 @@ package dev.jwall64.mdproxy.requirement;
 
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
-import dev.jwall64.mdproxy.ClientConnection;
+import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.registry.Identifier;
 import dev.jwall64.midnightlib.requirement.StringCheck;
 
@@ -14,7 +14,7 @@ public class Cookie extends ConnectionCheck {
     private final Set<String> values;
 
     public Cookie(Identifier cookie, Collection<String> values) {
-        super(true, true, false, Set.of(cookie));
+        super(true, Set.of(cookie));
         this.cookie = cookie;
         this.values = Set.copyOf(values);
     }
@@ -26,8 +26,8 @@ public class Cookie extends ConnectionCheck {
     );
 
     @Override
-    public boolean test(ClientConnection conn) {
-        byte[] c = conn.getCookie(cookie);
+    public boolean test(ConnectionContext conn) {
+        byte[] c = conn.getConnection().getCookie(cookie);
         String str = c == null ? "" : new String(c);
         return values.contains(str);
     }

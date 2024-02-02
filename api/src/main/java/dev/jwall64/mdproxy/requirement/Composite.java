@@ -2,8 +2,7 @@ package dev.jwall64.mdproxy.requirement;
 
 
 import dev.jwall64.mdcfg.serializer.Serializer;
-import dev.jwall64.mdproxy.ClientConnection;
-import dev.jwall64.mdproxy.ConnectionRequirement;
+import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.math.Range;
 import dev.jwall64.midnightlib.registry.Identifier;
 import dev.jwall64.midnightlib.requirement.CompositeCheck;
@@ -18,7 +17,7 @@ public class Composite extends ConnectionCheck {
     private final List<ConnectionRequirement> values;
 
     public Composite(Range<Integer> range, Collection<ConnectionRequirement> values) {
-        super(false, false, false, null);
+        super(false, null);
         this.range = range;
         this.values = List.copyOf(values);
     }
@@ -26,13 +25,6 @@ public class Composite extends ConnectionCheck {
     public boolean requiresAuth() {
         for(ConnectionRequirement r : values) {
             if(r.requiresAuth()) return true;
-        }
-        return false;
-    }
-    @Override
-    public boolean requiresCookies() {
-        for(ConnectionRequirement r : values) {
-            if(r.requiresCookies()) return true;
         }
         return false;
     }
@@ -46,14 +38,7 @@ public class Composite extends ConnectionCheck {
         return out;
     }
     @Override
-    public boolean requiresLocale() {
-        for(ConnectionRequirement r : values) {
-            if(r.requiresLocale()) return true;
-        }
-        return false;
-    }
-    @Override
-    public boolean test(ClientConnection conn) {
+    public boolean test(ConnectionContext conn) {
         return CompositeCheck.checkAll(range, values, conn);
     }
 
