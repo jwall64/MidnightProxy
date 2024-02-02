@@ -7,10 +7,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.haproxy.HAProxyMessageEncoder;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.netty.*;
-import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.PacketRegistry;
-import dev.jwall64.mdproxy.packet.ProtocolPhase;
-import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
+import dev.jwall64.mdproxy.packet.*;
 
 public class BackendConnectionImpl implements BackendConnection {
 
@@ -84,7 +81,8 @@ public class BackendConnectionImpl implements BackendConnection {
     public void changePhase(ProtocolPhase phase) {
 
         this.channel.pipeline().get(PacketEncoder.class).setRegistry(PacketRegistry.getServerbound(version, phase));
-        this.channel.pipeline().get(PacketDecoder.class).setRegistry(PacketRegistry.getClientbound(version, phase));
+        PacketDecoder<ClientboundPacketHandler> dec = this.channel.pipeline().get(PacketDecoder.class);
+        if(dec != null) dec.setRegistry(PacketRegistry.getClientbound(version, phase));
     }
 
     public Channel getChannel() {
