@@ -21,3 +21,11 @@ tasks.test {
     useJUnitPlatform()
 }
 
+
+tasks.withType<ProcessResources>() {
+    filesMatching("plugin.json") {
+        expand(mapOf(
+                Pair("version", project.version as String)
+        ))
+    }
+}

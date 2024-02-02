@@ -13,6 +13,7 @@ import dev.jwall64.mdproxy.command.ReloadCommand;
 import dev.jwall64.mdproxy.command.StopCommand;
 import dev.jwall64.mdproxy.netty.ConnectionManager;
 import dev.jwall64.mdproxy.plugin.PluginLoader;
+import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.midnightlib.registry.RegistryBase;
 import dev.jwall64.midnightlib.registry.StringRegistry;
@@ -179,6 +180,11 @@ public class ProxyServer implements Proxy {
     @Override
     public boolean bypassesPlayerLimit(PlayerInfo info) {
         return false;
+    }
+
+    @Override
+    public PluginManager getPluginManager() {
+        return pluginLoader;
     }
 
     public void addPlayer(ClientConnectionImpl conn) {

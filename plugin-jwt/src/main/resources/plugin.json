@@ -1,0 +1,5 @@
+{
+  "name": "JWT",
+  "version": "${version}",
+  "main": "dev.jwall64.mdproxy.jwt.JWTPlugin"
+}

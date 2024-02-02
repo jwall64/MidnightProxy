@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.requirement;
 
 import dev.jwall64.mdcfg.serializer.Serializer;
-import dev.jwall64.mdproxy.ClientConnection;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.TestResult;
 import dev.jwall64.midnightlib.registry.Identifier;

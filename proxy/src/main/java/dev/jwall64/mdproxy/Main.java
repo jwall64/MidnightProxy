@@ -4,6 +4,7 @@ import io.netty.util.internal.logging.InternalLoggerFactory;
 import io.netty.util.internal.logging.Slf4JLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import dev.jwall64.mcore.MidnightCoreAPI;
 import dev.jwall64.mcore.lang.LangManager;
 import dev.jwall64.mcore.lang.LangRegistry;
 import dev.jwall64.mcore.lang.PlaceholderManager;
@@ -19,6 +20,7 @@ import dev.jwall64.mdproxy.plugin.PluginLoader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 public class Main {
 
@@ -44,7 +46,9 @@ public class Main {
 
         InternalLoggerFactory.setDefaultFactory(Slf4JLoggerFactory.INSTANCE);
 
-        FileCodecRegistry reg = new FileCodecRegistry();
+        MidnightCoreAPI.GLOBAL_CONFIG_DIRECTORY.set(Path.of("config"));
+
+        FileCodecRegistry reg = MidnightCoreAPI.FILE_CODEC_REGISTRY;
         reg.registerFileCodec(JSONCodec.fileCodec());
 
         File configFile = new File("config.json");

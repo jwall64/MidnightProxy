@@ -2,6 +2,7 @@ package dev.jwall64.mdproxy;
 
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdproxy.command.CommandExecutor;
+import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.midnightlib.registry.RegistryBase;
 import dev.jwall64.midnightlib.registry.StringRegistry;
 
@@ -35,5 +36,7 @@ public interface Proxy {
     int getPlayerLimit();
 
     boolean bypassesPlayerLimit(PlayerInfo info);
+
+    PluginManager getPluginManager();
 
 }
