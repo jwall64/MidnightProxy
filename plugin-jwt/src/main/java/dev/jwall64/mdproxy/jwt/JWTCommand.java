@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.test;
+package dev.jwall64.mdproxy.jwt;
 
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.CommandSender;

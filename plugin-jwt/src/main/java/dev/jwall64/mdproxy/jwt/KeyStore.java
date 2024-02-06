@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.test;
+package dev.jwall64.mdproxy.jwt;
 
 import java.io.*;
 import java.util.HashMap;

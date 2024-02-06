@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.test;
+package dev.jwall64.mdproxy.jwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +15,7 @@ import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
 import java.io.File;
 
 public class JWTPlugin implements Plugin {
+    private static final Logger LOGGER = LoggerFactory.getLogger("JWTPlugin");
     private static final ConfigSection DEFAULT_CONFIG = new ConfigSection()
             .with("key_store_path", "keystore");
 
@@ -33,6 +34,8 @@ public class JWTPlugin implements Plugin {
 
         proxy.getCommands().register("jwt", new JWTCommand());
         ConnectionRequirement.REGISTRY.register("jwt", ConnectionCheck.forClass(JWTCheck.class, JWTCheck.SERIALIZER));
+
+        LOGGER.info("JWT Plugin enabled!");
     }
 
     public KeyStore getKeyStore() {
