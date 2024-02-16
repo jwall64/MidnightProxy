@@ -9,6 +9,7 @@ import dev.jwall64.mdproxy.StatusMessage;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 public record ClientboundStatusPacket(ConfigSection data) implements Packet<ClientboundPacketHandler> {
@@ -26,7 +27,7 @@ public record ClientboundStatusPacket(ConfigSection data) implements Packet<Clie
     }
 
     @Override
-    public void write(GameVersion ver, ByteBuf buf) {
+    public void write(GameVersion ver, ProtocolPhase phase, ByteBuf buf) {
 
         PacketBufferUtil.writeUtf(buf, JSONCodec.minified().encodeToString(ConfigContext.INSTANCE, data));
     }
@@ -36,7 +37,7 @@ public record ClientboundStatusPacket(ConfigSection data) implements Packet<Clie
         handler.handle(this);
     }
 
-    public static ClientboundStatusPacket read(GameVersion version, ByteBuf buf) {
+    public static ClientboundStatusPacket read(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
 
         return new ClientboundStatusPacket(JSONCodec.loadConfig(PacketBufferUtil.readUtf(buf)).asSection());
     }

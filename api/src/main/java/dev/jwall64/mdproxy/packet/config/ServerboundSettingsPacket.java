@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
@@ -16,14 +17,14 @@ public record ServerboundSettingsPacket(String locale, byte renderDistance, Chat
     }
 
     @Override
-    public void write(GameVersion version, ByteBuf buf) { }
+    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) { }
 
     @Override
     public void handle(ServerboundPacketHandler handler) {
         handler.handle(this);
     }
 
-    public static ServerboundSettingsPacket read(GameVersion version, ByteBuf buf) {
+    public static ServerboundSettingsPacket read(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
 
         String locale = PacketBufferUtil.readUtf(buf);
         byte renderDistance = buf.readByte();

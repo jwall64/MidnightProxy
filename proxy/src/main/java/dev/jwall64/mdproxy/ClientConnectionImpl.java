@@ -12,8 +12,7 @@ import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
-import dev.jwall64.mdproxy.packet.config.ClientboundConfigKickPacket;
-import dev.jwall64.mdproxy.packet.login.ClientboundKickPacket;
+import dev.jwall64.mdproxy.packet.common.ClientboundKickPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
 import dev.jwall64.midnightlib.registry.Identifier;
 
@@ -208,8 +207,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         LOGGER.info("Disconnecting player {}: {}", username(), cmp.allText());
 
         if(backend == null) {
-            Packet<ClientboundPacketHandler> p = phase == ProtocolPhase.CONFIG ? new ClientboundConfigKickPacket(cmp) : new ClientboundKickPacket(cmp);
-            send(p);
+            send(new ClientboundKickPacket(cmp));
         }
         channel.close().awaitUninterruptibly();
     }

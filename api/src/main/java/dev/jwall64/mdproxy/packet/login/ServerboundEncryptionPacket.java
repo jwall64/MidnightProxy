@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
@@ -26,7 +27,7 @@ public record ServerboundEncryptionPacket(byte[] sharedSecret, byte[] verifyToke
 
 
     @Override
-    public void write(GameVersion version, ByteBuf buf) {
+    public void write(GameVersion version, ProtocolPhase phase,  ByteBuf buf) {
         PacketBufferUtil.writeVarInt(buf, sharedSecret.length);
         buf.writeBytes(sharedSecret);
         PacketBufferUtil.writeVarInt(buf, verifyToken.length);
@@ -37,7 +38,7 @@ public record ServerboundEncryptionPacket(byte[] sharedSecret, byte[] verifyToke
         handler.handle(this);
     }
 
-    public static ServerboundEncryptionPacket read(GameVersion ver, ByteBuf buf) {
+    public static ServerboundEncryptionPacket read(GameVersion ver, ProtocolPhase phase, ByteBuf buf) {
 
         byte[] secret = new byte[PacketBufferUtil.readVarInt(buf)];
         buf.readBytes(secret);

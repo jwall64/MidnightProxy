@@ -4,11 +4,12 @@ import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 
 public record ServerboundPingPacket(long value) implements Packet<ServerboundPacketHandler> {
 
-    public static final PacketType<ServerboundPacketHandler> TYPE =  PacketType.of(1, (ver, buf) -> new ServerboundPingPacket(buf.readLong()));
+    public static final PacketType<ServerboundPacketHandler> TYPE =  PacketType.of(1, (ver, phase, buf) -> new ServerboundPingPacket(buf.readLong()));
 
     @Override
     public PacketType<ServerboundPacketHandler> getType() {
@@ -16,7 +17,7 @@ public record ServerboundPingPacket(long value) implements Packet<ServerboundPac
     }
 
     @Override
-    public void write(GameVersion version, ByteBuf buf) {
+    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
         buf.writeLong(value);
     }
 

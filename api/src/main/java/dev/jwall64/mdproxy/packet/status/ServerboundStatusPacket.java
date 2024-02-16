@@ -4,11 +4,12 @@ import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 
 public class ServerboundStatusPacket implements Packet<ServerboundPacketHandler> {
 
-    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(0, (ver, buf) -> new ServerboundStatusPacket());
+    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(0, (ver, phase, buf) -> new ServerboundStatusPacket());
 
     @Override
     public PacketType<ServerboundPacketHandler> getType() {
@@ -16,7 +17,7 @@ public class ServerboundStatusPacket implements Packet<ServerboundPacketHandler>
     }
 
     @Override
-    public void write(GameVersion ver, ByteBuf buf) { }
+    public void write(GameVersion ver, ProtocolPhase phase, ByteBuf buf) { }
 
     @Override
     public void handle(ServerboundPacketHandler handler) {
