@@ -4,7 +4,10 @@ import dev.jwall64.mdproxy.command.ArgumentParser;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.CommandSender;
 
-import java.security.*;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.SecureRandom;
 import java.util.Set;
 
 public class JWTCommand implements CommandExecutor {

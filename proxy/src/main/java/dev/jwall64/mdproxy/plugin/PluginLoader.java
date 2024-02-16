@@ -7,7 +7,6 @@ import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdcfg.serializer.SerializeException;
 import dev.jwall64.mdproxy.Proxy;
-import dev.jwall64.midnightlib.module.ModuleManager;
 
 import java.io.File;
 import java.io.IOException;

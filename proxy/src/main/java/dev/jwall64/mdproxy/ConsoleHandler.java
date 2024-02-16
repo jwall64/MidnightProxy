@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.CommandSender;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 public class ConsoleHandler implements CommandSender {
