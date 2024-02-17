@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
+import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.jwt.*;
 import dev.jwall64.mdproxy.netty.*;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
@@ -186,6 +187,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
             // Verify claims
             JWTVerifier verifier = new JWTVerifier()
                     .requireEncrypted()
+                    .enforceSingleUse(server.getTokenCache())
                     .withClaim("hostname", conn.hostname())
                     .withClaim("port", conn.port())
                     .withClaim("username", conn.username())
@@ -467,6 +469,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
                 .withClaim("username", conn.username())
                 .withClaim("uuid", conn.uuid().toString())
                 .withClaim("backend", server.getBackends().getId(b))
+                .withClaim(server.getTokenCache().getIdClaim(), UUID.randomUUID(), Serializer.UUID)
                 .expiresIn(server.getReconnectTimeout())
                 .issuedBy("midnightproxy")
                 .encrypted(rsa, CryptCodec.A128CBC_HS256())

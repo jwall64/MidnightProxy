@@ -11,6 +11,7 @@ import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.ReloadCommand;
 import dev.jwall64.mdproxy.command.StopCommand;
+import dev.jwall64.mdproxy.jwt.UsedTokenCache;
 import dev.jwall64.mdproxy.netty.ConnectionManager;
 import dev.jwall64.mdproxy.plugin.PluginLoader;
 import dev.jwall64.mdproxy.plugin.PluginManager;
@@ -40,6 +41,7 @@ public class ProxyServer implements Proxy {
     private final ConsoleHandler console;
     private final LangManager langManager;
     private final PluginLoader pluginLoader;
+    private final UsedTokenCache reconnectTokenCache;
 
     private final int port;
     private final int clientTimeout;
@@ -56,6 +58,7 @@ public class ProxyServer implements Proxy {
         this.config = config;
         this.langManager = langManager;
         this.pluginLoader = pluginLoader;
+        this.reconnectTokenCache = new UsedTokenCache("rcid");
 
         this.port = getConfig().getInt("port");
         this.clientTimeout = getConfig().getInt("client_timeout");
@@ -224,6 +227,10 @@ public class ProxyServer implements Proxy {
 
     public Authenticator getAuthenticator() {
         return authenticator;
+    }
+
+    public UsedTokenCache getTokenCache() {
+        return reconnectTokenCache;
     }
 
     public int getClientTimeout() {
