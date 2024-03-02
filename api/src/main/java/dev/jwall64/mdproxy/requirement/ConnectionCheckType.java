@@ -2,13 +2,10 @@ package dev.jwall64.mdproxy.requirement;
 
 import dev.jwall64.mdcfg.serializer.SerializeContext;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
-import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.registry.Registry;
 import dev.jwall64.midnightlib.requirement.Check;
 import dev.jwall64.midnightlib.requirement.CheckType;
-import dev.jwall64.midnightlib.requirement.CompositeCheck;
-import dev.jwall64.midnightlib.requirement.Requirement;
 
 public abstract class ConnectionCheckType implements CheckType<ConnectionContext> {
 

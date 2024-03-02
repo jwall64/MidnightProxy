@@ -3,13 +3,10 @@ package dev.jwall64.mdproxy.requirement;
 import org.jetbrains.annotations.NotNull;
 import dev.jwall64.mdcfg.serializer.SerializeContext;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
-import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.math.Range;
 import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.requirement.Check;
 import dev.jwall64.midnightlib.requirement.NumberCheck;
-import dev.jwall64.midnightlib.requirement.StringCheck;
 
 import java.util.Collection;
 import java.util.Collections;
