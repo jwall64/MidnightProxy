@@ -1,6 +1,9 @@
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import dev.jwall64.mdproxy.jwt.*;
+import dev.jwall64.mdproxy.jwt.HashCodec;
+import dev.jwall64.mdproxy.jwt.JWSSerializer;
+import dev.jwall64.mdproxy.jwt.JWT;
+import dev.jwall64.mdproxy.jwt.JWTBuilder;
 
 public class TestExpiration {
 

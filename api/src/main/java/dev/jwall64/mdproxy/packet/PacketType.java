@@ -4,9 +4,6 @@ import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdcfg.Functions;
 
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
 public interface PacketType<T> {
 
     int getId(GameVersion version, ProtocolPhase phase);

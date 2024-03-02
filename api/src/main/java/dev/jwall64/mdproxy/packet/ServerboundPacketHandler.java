@@ -1,8 +1,8 @@
 package dev.jwall64.mdproxy.packet;
 
+import dev.jwall64.mdproxy.packet.common.ServerboundCookiePacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundSettingsPacket;
-import dev.jwall64.mdproxy.packet.common.ServerboundCookiePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundEncryptionPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginFinishedPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;

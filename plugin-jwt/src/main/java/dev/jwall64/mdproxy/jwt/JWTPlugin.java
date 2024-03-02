@@ -9,8 +9,7 @@ import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.Proxy;
 import dev.jwall64.mdproxy.plugin.Plugin;
-import dev.jwall64.mdproxy.requirement.ConnectionCheck;
-import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
+import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
 
 import java.io.File;
 
@@ -33,7 +32,7 @@ public class JWTPlugin implements Plugin {
         keyStore = new FileKeyStore(new File(configFolder, config.getRoot().asSection().getString("key_store_path")), FileKeyStore.DEFAULT_TYPES);
 
         proxy.getCommands().register("jwt", new JWTCommand());
-        ConnectionRequirement.REGISTRY.register("jwt", ConnectionCheck.forClass(JWTCheck.class, JWTCheck.SERIALIZER));
+        ConnectionCheckType.REGISTRY.register("jwt", JWTCheck.TYPE);
 
         LOGGER.info("JWT Plugin enabled!");
     }
