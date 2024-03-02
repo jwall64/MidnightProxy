@@ -5,12 +5,13 @@ import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 public record ClientboundEncryptionPacket(String serverId, byte[] publicKey, byte[] verifyToken, boolean authEnabled) implements Packet<ClientboundPacketHandler> {
 
 
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(1, (ver, buf) -> {
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(1, (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });
 
@@ -20,7 +21,7 @@ public record ClientboundEncryptionPacket(String serverId, byte[] publicKey, byt
     }
 
     @Override
-    public void write(GameVersion version, ByteBuf buf) {
+    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
         PacketBufferUtil.writeUtf(buf, serverId);
         PacketBufferUtil.writeVarInt(buf, publicKey.length);
         buf.writeBytes(publicKey);

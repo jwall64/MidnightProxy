@@ -2,6 +2,7 @@ package dev.jwall64.mdproxy.netty;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
+import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import dev.jwall64.mdproxy.ClientPacketHandler;
 import dev.jwall64.mdproxy.ProxyServer;
@@ -30,6 +31,10 @@ public class ClientChannelInitializer extends ChannelInitializer<Channel> {
                 .addLast("frame_dec", new FrameDecoder())
                 .addLast("decoder", new PacketDecoder<>(PacketRegistry.HANDSHAKE));
 
+        if(server.useHAProxyProtocol()) {
+            channel.pipeline().addFirst(new HAProxyMessageDecoder());
+        }
+
         ClientPacketHandler handler = new ClientPacketHandler(channel, server);
         channel.pipeline().addLast("handler", new PacketHandler<>(handler));
 
@@ -37,7 +42,6 @@ public class ClientChannelInitializer extends ChannelInitializer<Channel> {
         channel.closeFuture().addListener(future -> {
             manager.removeClientConnection(handler);
         });
-
 
     }
 }
