@@ -6,7 +6,9 @@ import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.midnightlib.registry.RegistryBase;
 import dev.jwall64.midnightlib.registry.StringRegistry;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public interface Proxy {
 
@@ -30,6 +32,10 @@ public interface Proxy {
     IconCache getIconCache();
 
     StringRegistry<CommandExecutor> getCommands();
+
+    Collection<UUID> getClientIds();
+
+    ClientConnection getConnection(UUID uuid);
 
     int getOnlinePlayers();
 

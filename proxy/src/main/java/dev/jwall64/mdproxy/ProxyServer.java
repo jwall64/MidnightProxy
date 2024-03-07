@@ -9,6 +9,7 @@ import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.command.CommandExecutor;
+import dev.jwall64.mdproxy.command.ListCommand;
 import dev.jwall64.mdproxy.command.ReloadCommand;
 import dev.jwall64.mdproxy.command.StopCommand;
 import dev.jwall64.mdproxy.jwt.UsedTokenCache;
@@ -20,10 +21,7 @@ import dev.jwall64.midnightlib.registry.RegistryBase;
 import dev.jwall64.midnightlib.registry.StringRegistry;
 
 import java.security.KeyPair;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class ProxyServer implements Proxy {
 
@@ -70,6 +68,7 @@ public class ProxyServer implements Proxy {
 
         this.commands.register("stop", new StopCommand());
         this.commands.register("reload", new ReloadCommand());
+        this.commands.register("list", new ListCommand());
 
         this.listener = new ConnectionManager(this);
         this.console = new ConsoleHandler(this);
@@ -172,6 +171,16 @@ public class ProxyServer implements Proxy {
     @Override
     public StringRegistry<CommandExecutor> getCommands() {
         return commands;
+    }
+
+    @Override
+    public Collection<UUID> getClientIds() {
+        return connected.keySet();
+    }
+
+    @Override
+    public ClientConnection getConnection(UUID uuid) {
+        return connected.get(uuid);
     }
 
     @Override
