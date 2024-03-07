@@ -1,5 +1,5 @@
 {
-  "name": "WhitelistPlugin",
+  "name": "Whitelist",
   "version": "${version}",
   "main": "dev.jwall64.mdproxy.whitelist.WhitelistPlugin"
 }
