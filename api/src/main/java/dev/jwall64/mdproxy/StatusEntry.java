@@ -3,6 +3,7 @@ package dev.jwall64.mdproxy;
 import org.jetbrains.annotations.NotNull;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mcore.text.Component;
+import dev.jwall64.mcore.text.ConfigSerializer;
 import dev.jwall64.mcore.text.ModernSerializer;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
@@ -85,7 +86,7 @@ public record StatusEntry(int priority, Integer playersOverride, Integer maxPlay
             Serializer.INT.entry("players_override", StatusEntry::playersOverride).optional(),
             Serializer.INT.entry("max_players_override", StatusEntry::maxPlayersOverride).optional(),
             PlayerInfo.SERIALIZER.listOf().entry("player_sample", StatusEntry::playerSample).optional(),
-            ModernSerializer.INSTANCE.forContext(GameVersion.MAX).entry("message", StatusEntry::message).optional(),
+            ConfigSerializer.INSTANCE.entry("message", StatusEntry::message).optional(),
             Serializer.STRING.entry("icon", StatusEntry::icon).optional(),
             Serializer.BOOLEAN.entry("secure_chat", StatusEntry::secureChat).optional(),
             Serializer.BOOLEAN.entry("preview_chat", StatusEntry::previewChat).optional(),
