@@ -1,13 +1,21 @@
 package dev.jwall64.mdproxy;
 
+import dev.jwall64.mcore.lang.PlaceholderManager;
+import dev.jwall64.mcore.lang.PlaceholderSupplier;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.midnightlib.registry.RegistryBase;
 import dev.jwall64.midnightlib.registry.StringRegistry;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public interface Proxy {
@@ -44,5 +52,25 @@ public interface Proxy {
     boolean bypassesPlayerLimit(PlayerInfo info);
 
     PluginManager getPluginManager();
+
+
+    static void registerPlaceholders(PlaceholderManager manager) {
+
+        manager.registerSupplier("proxy_online_players", PlaceholderSupplier.inline(ctx -> ctx.onValue(Proxy.class, prx -> prx.getOnlinePlayers() + "")));
+        manager.registerSupplier("proxy_player_limit", PlaceholderSupplier.inline(ctx -> ctx.onValue(Proxy.class, prx -> prx.getPlayerLimit() + "")));
+
+        manager.registerSupplier("system_time", PlaceholderSupplier.inline(ctx -> {
+            String format = ctx.getParameter() == null ? "dd/MM/yyyy HH:mm:ss" : ctx.getParameter().allText();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+            return Instant.now().atZone(ZoneId.systemDefault()).format(dtf);
+        }));
+
+        manager.registerSupplier("system_time_utc", PlaceholderSupplier.inline(ctx -> {
+            String format = ctx.getParameter() == null ? "dd/MM/yyyy HH:mm:ss" : ctx.getParameter().allText();
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
+            return Instant.now().atZone(ZoneOffset.UTC).format(dtf);
+        }));
+
+    }
 
 }
