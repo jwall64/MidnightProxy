@@ -1,0 +1,5 @@
+{
+  "name": "LastServer",
+  "version": "${version}",
+  "main": "dev.jwall64.mdproxy.lastsrv.LastServerPlugin"
+}
