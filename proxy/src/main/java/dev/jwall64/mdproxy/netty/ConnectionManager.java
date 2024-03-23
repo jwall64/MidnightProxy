@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mdproxy.ClientConnectionImpl;
 import dev.jwall64.mdproxy.ClientPacketHandler;
-import dev.jwall64.mdproxy.PlayerInfo;
 import dev.jwall64.mdproxy.ProxyServer;
 
 import java.net.InetSocketAddress;
@@ -24,13 +23,13 @@ public class ConnectionManager {
 
     private final EventLoopGroup eventLoopGroup;
     private final ProxyServer server;
-    private final List<ClientPacketHandler> connected;
+    private final Set<ClientPacketHandler> connected;
     private ChannelFuture channel;
 
     public ConnectionManager(ProxyServer server) {
         this.server = server;
         this.eventLoopGroup = new NioEventLoopGroup();
-        this.connected = new ArrayList<>();
+        this.connected = new HashSet<>();
     }
 
     public void startup() {
@@ -61,11 +60,12 @@ public class ConnectionManager {
 
     public void addClientConnection(ClientPacketHandler handler) {
         this.connected.add(handler);
+        server.clientConnectEvent().invoke(handler.getConnection());
     }
 
     public void removeClientConnection(ClientPacketHandler handler) {
-        this.connected.remove(handler);
         server.clientDisconnectEvent().invoke(handler.getConnection());
+        this.connected.remove(handler);
     }
 
     public int getClientCount() {
