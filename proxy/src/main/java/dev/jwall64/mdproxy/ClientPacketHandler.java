@@ -30,7 +30,6 @@ import dev.jwall64.midnightlib.types.DefaultedSingleton;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.math.BigInteger;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
