@@ -9,7 +9,6 @@ import dev.jwall64.mdproxy.ProxyServer;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
 import dev.jwall64.midnightlib.types.DefaultedSingleton;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 

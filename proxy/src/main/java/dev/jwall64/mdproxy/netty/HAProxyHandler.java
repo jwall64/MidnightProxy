@@ -4,7 +4,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.haproxy.HAProxyMessage;
 import dev.jwall64.midnightlib.types.DefaultedSingleton;
-import dev.jwall64.midnightlib.types.ResettableSingleton;
 
 import java.net.InetSocketAddress;
 

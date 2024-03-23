@@ -2,8 +2,6 @@ package dev.jwall64.mdproxy.command;
 
 import dev.jwall64.mdproxy.ClientConnection;
 
-import java.util.UUID;
-
 public class ListCommand implements CommandExecutor {
     @Override
     public void execute(CommandSender sender, String[] args) {

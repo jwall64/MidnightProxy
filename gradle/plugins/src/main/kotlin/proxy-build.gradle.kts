@@ -12,7 +12,11 @@ java {
 repositories {
     mavenCentral()
     mavenLocal()
-    maven("https://maven.jwall64.dev/")
+    maven("https://maven.jwall64.dev/releases")
+
+    if(GradleVersion.version(version as String).isSnapshot) {
+        maven("https://maven.jwall64.dev/snapshots")
+    }
 }
 
 dependencies {
