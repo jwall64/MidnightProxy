@@ -10,7 +10,6 @@ import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mcore.text.ComponentResolver;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.common.ClientboundKickPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
@@ -36,7 +35,6 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
     private String locale;
     private BackendConnectionImpl backend;
     private final Map<Identifier, byte[]> cookies = new HashMap<>();
-
 
 
     public ClientConnectionImpl(Channel channel, InetSocketAddress address, int protocolVersion, String hostname, int port) {
@@ -130,11 +128,6 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
     }
 
     @Override
-    public boolean isForwarding() {
-        return backend != null;
-    }
-
-    @Override
     public boolean hasDisconnected() {
         return !channel.isOpen();
     }
@@ -202,7 +195,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         }
     }
 
-    public void disconnect(ProtocolPhase phase, Component component) {
+    public void disconnect(Component component) {
 
         if(hasDisconnected()) {
             return;
