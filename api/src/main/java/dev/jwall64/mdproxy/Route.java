@@ -3,7 +3,6 @@ package dev.jwall64.mdproxy;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.mcore.lang.PlaceholderContext;
 import dev.jwall64.mcore.lang.UnresolvedComponent;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.SerializeContext;

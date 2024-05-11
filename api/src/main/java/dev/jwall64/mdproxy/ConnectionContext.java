@@ -4,7 +4,6 @@ import dev.jwall64.mcore.lang.CustomPlaceholder;
 import dev.jwall64.mcore.lang.PlaceholderContext;
 
 import java.net.InetAddress;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
