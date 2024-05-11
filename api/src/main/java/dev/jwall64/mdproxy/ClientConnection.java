@@ -6,7 +6,6 @@ import dev.jwall64.mcore.lang.PlaceholderSupplier;
 import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
 import dev.jwall64.midnightlib.registry.Identifier;
