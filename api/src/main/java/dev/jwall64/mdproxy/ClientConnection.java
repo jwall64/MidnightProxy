@@ -7,7 +7,9 @@ import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
+import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
+import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
 
 import java.net.InetAddress;
@@ -171,6 +173,21 @@ public interface ClientConnection {
      * @return A completable future which will be complete when all tasks are done.
      */
     CompletableFuture<Void> executeTasksAsync(String taskQueue);
+
+    /**
+     * An event fired whenever a plugin message is received.
+     * @return A plugin message event handler list.
+     */
+    HandlerList<ServerboundPluginMessagePacket> pluginMessageEvent();
+
+    /**
+     * Awaits a plugin message in the given channel.
+     * @param id The channel ID to wait for a plugin message in.
+     * @param timeout The time to wait for a packet before returning null.
+     * @return A plugin message packet, or null if the timeout was reached.
+     */
+    @Nullable
+    ServerboundPluginMessagePacket awaitPluginMessage(Identifier id, int timeout);
 
 
     static void registerPlaceholders(PlaceholderManager manager) {

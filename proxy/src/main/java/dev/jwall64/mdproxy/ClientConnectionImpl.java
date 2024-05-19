@@ -3,6 +3,7 @@ package dev.jwall64.mdproxy;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.lang.LocaleHolder;
@@ -12,15 +13,15 @@ import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.common.ClientboundKickPacket;
+import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
+import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
 
@@ -37,6 +38,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
     private BackendConnectionImpl backend;
     private final Map<Identifier, byte[]> cookies = new HashMap<>();
     private final Map<String, Queue<Task>> tasks = new HashMap<>();
+    private final HandlerList<ServerboundPluginMessagePacket> pluginMessageEvent = new HandlerList<>();
 
 
     public ClientConnectionImpl(Channel channel, InetSocketAddress address, int protocolVersion, String hostname, int port) {
@@ -260,6 +262,28 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
             channel.config().setAutoRead(true);
 
         }, channel.eventLoop());
+    }
+
+    @Override
+    public HandlerList<ServerboundPluginMessagePacket> pluginMessageEvent() {
+        return pluginMessageEvent;
+    }
+
+    @Override
+    public @Nullable ServerboundPluginMessagePacket awaitPluginMessage(Identifier id, int timeout) {
+
+        CompletableFuture<ServerboundPluginMessagePacket> out = new CompletableFuture<>();
+
+        pluginMessageEvent.register(out, out::complete);
+        out.join();
+        try {
+            return out.get(timeout, TimeUnit.MILLISECONDS);
+        } catch (TimeoutException ex) {
+            return null;
+        } catch (InterruptedException | ExecutionException ex) {
+            LOGGER.error("An exception occurred while awaiting a plugin message!", ex);
+            return null;
+        }
     }
 
     public Channel getChannel() {
