@@ -1,5 +1,6 @@
 package dev.jwall64.mdproxy;
 
+import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
 import dev.jwall64.mcore.lang.PlaceholderManager;
 import dev.jwall64.mcore.lang.PlaceholderSupplier;
@@ -9,6 +10,7 @@ import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
+import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
 
@@ -183,11 +185,29 @@ public interface ClientConnection {
     /**
      * Awaits a plugin message in the given channel.
      * @param id The channel ID to wait for a plugin message in.
-     * @param timeout The time to wait for a packet before returning null.
+     * @param timeout The time to wait for a packet before returning null, in milliseconds.
      * @return A plugin message packet, or null if the timeout was reached.
      */
     @Nullable
     ServerboundPluginMessagePacket awaitPluginMessage(Identifier id, int timeout);
+
+    /**
+     * Sends a login query to the client. Only valid during the login phase.
+     * @param id The login query channel ID.
+     * @param data The packet data.
+     * @return A future which will be complete when the client responds.
+     */
+    CompletableFuture<ServerboundLoginQueryPacket> sendLoginQuery(Identifier id, ByteBuf data);
+
+    /**
+     * Sends a login query to the client and awaits a response. Only valid during the login phase.
+     * @param id The login query channel ID.
+     * @param data The packet data.
+     * @param timeout The time to wait for a packet before returning null, in milliseconds.
+     * @return The client's response.
+     */
+    ServerboundLoginQueryPacket awaitLoginQuery(Identifier id, ByteBuf data, int timeout);
+
 
 
     static void registerPlaceholders(PlaceholderManager manager) {
