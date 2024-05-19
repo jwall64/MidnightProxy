@@ -1,5 +1,5 @@
 {
-  "name": "JWT",
+  "name": "Test Plugin",
   "version": "${version}",
-  "main": "dev.jwall64.mdproxy.jwt.JWTPlugin"
+  "main": "dev.jwall64.mdproxy.test.TestPlugin"
 }
