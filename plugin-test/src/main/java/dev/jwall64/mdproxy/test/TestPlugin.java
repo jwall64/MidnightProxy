@@ -1,9 +1,13 @@
 package dev.jwall64.mdproxy.test;
 
+import io.netty.buffer.Unpooled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mdproxy.Proxy;
+import dev.jwall64.mdproxy.Task;
+import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.mdproxy.plugin.Plugin;
+import dev.jwall64.midnightlib.registry.Identifier;
 
 public class TestPlugin implements Plugin {
 
@@ -13,5 +17,18 @@ public class TestPlugin implements Plugin {
     public void initialize(Proxy proxy) {
 
         LOGGER.info("Hello, World");
+
+        proxy.clientConnectEvent().register(this, conn -> {
+            conn.registerTask(Task.PRE_LOGIN_QUEUE, (queue, connection) -> {
+                LOGGER.info("Sent query");
+                ServerboundLoginQueryPacket pck = connection.awaitLoginQuery(new Identifier("mdproxy", "test"), Unpooled.buffer(), 5000);
+                if(pck == null) {
+                    LOGGER.warn("Client didn't respond in time!");
+                } else if(pck.data() == null) {
+                    LOGGER.info("Received response: {}", pck.data() != null);
+                }
+            });
+            LOGGER.info("Registered task");
+        });
     }
 }
