@@ -5,6 +5,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.GameVersion;
+import dev.jwall64.mcore.lang.UnresolvedComponent;
 import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
@@ -366,7 +367,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
 
     }
 
-    private void disconnect(Component component) {
+    private void disconnect(UnresolvedComponent component) {
         conn.disconnect(component);
     }
 
