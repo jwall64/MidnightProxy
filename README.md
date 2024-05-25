@@ -227,7 +227,7 @@ file at its root with the following contents:
 ```
 A plugin's main class must implement the `Plugin` interface, which requires it implement the method `void initialize(Proxy)`
 The proxy's API is published in the repository at `https://maven.jwall64.dev/releases`
-The proxy's API is published with the artifact ID `dev.jwall64:midnightproxy-api`. The latest version is `0.4.0`
+The proxy's API is published with the artifact ID `dev.jwall64:midnightproxy-api`. The latest version is `0.4.1`
 
 As of now, the plugin API is pretty limited. Plugins can pretty much only add console commands and requirement types.
 
