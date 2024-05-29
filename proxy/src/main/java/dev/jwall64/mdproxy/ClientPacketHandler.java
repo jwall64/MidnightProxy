@@ -2,6 +2,7 @@ package dev.jwall64.mdproxy;
 
 import com.google.common.primitives.Ints;
 import io.netty.channel.Channel;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.GameVersion;
@@ -68,7 +69,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
         this.routes = new ArrayDeque<>(server.getRoutes());
     }
 
-
+    @Nullable
     public ClientConnectionImpl getConnection() {
         return conn;
     }
