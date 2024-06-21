@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mcore.lang.UnresolvedComponent;
+import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
@@ -38,6 +39,9 @@ import java.security.*;
 import java.util.*;
 
 public class ClientPacketHandler implements ServerboundPacketHandler {
+
+
+    private static final Component IGNORE_STATUS_REASON = Component.translate("disconnect.ignoring_status_request");
 
     private static final Logger LOGGER = LoggerFactory.getLogger("ClientPacketHandler");
     private static final Identifier RECONNECT_COOKIE = new Identifier("mdp", "rc");
@@ -98,7 +102,8 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
 
         StatusEntry e = conn.getStatusEntry(server);
         if(e == null) {
-            close();
+            conn.disconnect(IGNORE_STATUS_REASON, false);
+            return;
         }
 
         statusResponder = new StatusResponder(conn, server, e);
@@ -110,6 +115,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
 
         if(statusResponder == null) {
             LOGGER.warn("Received ping packet before status packet!");
+            conn.disconnect(IGNORE_STATUS_REASON, false);
             return;
         }
         statusResponder.ping(ping);

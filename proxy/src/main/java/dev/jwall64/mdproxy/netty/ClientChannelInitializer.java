@@ -6,6 +6,8 @@ import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import dev.jwall64.mdproxy.BackendConnectionImpl;
+import dev.jwall64.mdproxy.ClientConnectionImpl;
 import dev.jwall64.mdproxy.ClientPacketHandler;
 import dev.jwall64.mdproxy.ProxyServer;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
@@ -51,7 +53,14 @@ public class ClientChannelInitializer extends ChannelInitializer<Channel> {
 
         manager.addClientConnection(handler);
         channel.closeFuture().addListener(future -> {
-            if(!handler.wasReconnected()) LOGGER.info("Client disconnected: {}", handler.getUsername());
+            ClientConnectionImpl conn = handler.getConnection();
+            if(conn != null) {
+                BackendConnectionImpl bConn = conn.getBackendConnection();
+                if(bConn != null) {
+                    bConn.close();
+                    LOGGER.info("Client disconnected: {}", handler.getUsername());
+                }
+            }
             LOGGER.debug("Client disconnected: {}", handler.getUsername());
             manager.removeClientConnection(handler);
         });
