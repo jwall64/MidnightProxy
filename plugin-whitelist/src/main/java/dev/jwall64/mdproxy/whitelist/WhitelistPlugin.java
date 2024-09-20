@@ -11,7 +11,7 @@ import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdproxy.Proxy;
 import dev.jwall64.mdproxy.plugin.Plugin;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
-import dev.jwall64.midnightlib.registry.StringRegistry;
+import dev.jwall64.midnightlib.registry.Registry;
 
 import java.io.File;
 
@@ -20,7 +20,7 @@ public class WhitelistPlugin implements Plugin {
     private static final Logger LOGGER = LoggerFactory.getLogger("WhitelistPlugin");
     private static final ConfigSection DEFAULT_CONFIG = new ConfigSection()
             .with("lists", new ConfigSection());
-    private final StringRegistry<Whitelist> lists = new StringRegistry<>();
+    private final Registry<String, Whitelist> lists = Registry.createStringRegistry();
     private FileWrapper<ConfigObject> config;
 
     @Override
@@ -35,12 +35,12 @@ public class WhitelistPlugin implements Plugin {
             config.save();
         }
 
-        ConnectionCheckType.REGISTRY.register("whitelist", WhitelistCheck.TYPE);
+        ConnectionCheckType.REGISTRY.tryRegister("whitelist", WhitelistCheck.TYPE);
 
         reload();
     }
 
-    public StringRegistry<Whitelist> getLists() {
+    public Registry<String, Whitelist> getLists() {
         return lists;
     }
 

@@ -6,8 +6,7 @@ import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.midnightlib.event.HandlerList;
-import dev.jwall64.midnightlib.registry.RegistryBase;
-import dev.jwall64.midnightlib.registry.StringRegistry;
+import dev.jwall64.midnightlib.registry.Registry;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -60,7 +59,7 @@ public interface Proxy {
      * Gets a registry of all backends.
      * @return The backend registry.
      */
-    RegistryBase<String, Backend> getBackends();
+    Registry<String, Backend> getBackends();
 
     /**
      * Gets a list of all status entries.
@@ -84,7 +83,7 @@ public interface Proxy {
      * Gets the proxy's console command registry.
      * @return The command registry.
      */
-    StringRegistry<CommandExecutor> getCommands();
+    Registry<String, CommandExecutor> getCommands();
 
     /**
      * Gets a stream of the UUIDs of all clients connected through the proxy.

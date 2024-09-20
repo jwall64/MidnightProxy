@@ -10,7 +10,7 @@ import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
 import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.registry.RegistryBase;
+import dev.jwall64.midnightlib.registry.Registry;
 import dev.jwall64.midnightlib.types.Either;
 
 import java.util.Collection;
@@ -35,7 +35,7 @@ public record Route(@Nullable Either<UnresolvedComponent, UnresolvedBackend> bac
         return requirement.test(ctx);
     }
 
-    public @Nullable Backend resolveBackend(ConnectionContext ctx, RegistryBase<String, Backend> backends) {
+    public @Nullable Backend resolveBackend(ConnectionContext ctx, Registry<String, Backend> backends) {
 
         if(backend == null) return null;
 

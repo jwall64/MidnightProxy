@@ -1,7 +1,7 @@
 package dev.jwall64.mdproxy.jwt;
 
 import dev.jwall64.mdcfg.ConfigSection;
-import dev.jwall64.midnightlib.registry.StringRegistry;
+import dev.jwall64.midnightlib.registry.Registry;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -10,7 +10,7 @@ import java.security.GeneralSecurityException;
 
 public class HashCodec<T> {
 
-    public static final StringRegistry<Algorithm<?>> ALGORITHMS = new StringRegistry<>();
+    public static final Registry<String, Algorithm<?>> ALGORITHMS = Registry.createStringRegistry();
     private final Algorithm<T> alg;
     private final T key;
 
