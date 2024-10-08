@@ -19,7 +19,10 @@ import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Registry;
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.KeyPair;
 import java.util.*;
 import java.util.stream.Stream;
@@ -73,13 +76,16 @@ public class ProxyServer implements Proxy {
         this.playerList = new PlayerListImpl();
         this.playerCount = playerList;
 
-        File iconCacheDir = new File(getConfig().getString("icon_cache_dir"));
+        Path iconCacheDir = Paths.get(getConfig().getString("icon_cache_dir"));
         this.iconCache = new IconCacheImpl(iconCacheDir, getConfig().getInt("icon_cache_size"));
 
-        if(!iconCacheDir.exists() && !iconCacheDir.mkdirs()) {
-            LOGGER.warn("Unable to create icon cache directory!");
+        if(!Files.isDirectory(iconCacheDir)) {
+            try {
+                Files.createDirectories(iconCacheDir);
+            } catch (IOException e) {
+                throw new RuntimeException("Could not create icon cache directory", e);
+            }
         }
-
 
         this.port = getConfig().getInt("port");
         this.clientTimeout = getConfig().getInt("client_timeout_ms");
