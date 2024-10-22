@@ -7,9 +7,7 @@ import dev.jwall64.mcore.lang.PlaceholderSupplier;
 import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
-import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
@@ -96,19 +94,6 @@ public interface ClientConnection {
      */
     @Nullable
     String locale();
-
-    /**
-     * Generates a handshake packet for the client using the given intent.
-     * @param intent The client's intent
-     * @return A new handshake packet
-     */
-    ServerboundHandshakePacket handshakePacket(ServerboundHandshakePacket.Intent intent);
-
-    /**
-     * Generates a login packet (player info packet) for the client.
-     * @return A new login packet.
-     */
-    ServerboundLoginPacket loginPacket();
 
     /**
      * Determines if the client has disconnected.

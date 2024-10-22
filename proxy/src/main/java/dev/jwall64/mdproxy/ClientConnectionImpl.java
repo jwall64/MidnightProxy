@@ -12,11 +12,9 @@ import dev.jwall64.mcore.lang.UnresolvedComponent;
 import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.common.ClientboundKickPacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
 import dev.jwall64.mdproxy.packet.login.ClientboundLoginQueryPacket;
-import dev.jwall64.mdproxy.packet.login.ServerboundLoginPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
@@ -132,16 +130,6 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
     @Override
     public String locale() {
         return locale;
-    }
-
-    @Override
-    public ServerboundHandshakePacket handshakePacket(ServerboundHandshakePacket.Intent intent) {
-        return new ServerboundHandshakePacket(protocolVersion, hostname, port, intent);
-    }
-
-    @Override
-    public ServerboundLoginPacket loginPacket() {
-        return new ServerboundLoginPacket(playerInfo.username(), playerInfo.uuid());
     }
 
     @Override
