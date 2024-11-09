@@ -13,8 +13,8 @@ import dev.jwall64.mdproxy.command.ReloadCommand;
 import dev.jwall64.mdproxy.command.StopCommand;
 import dev.jwall64.mdproxy.jwt.UsedTokenCache;
 import dev.jwall64.mdproxy.netty.ConnectionManager;
-import dev.jwall64.mdproxy.plugin.PluginLoader;
 import dev.jwall64.mdproxy.plugin.PluginManager;
+import dev.jwall64.mdproxy.plugin.PluginManagerImpl;
 import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Registry;
@@ -43,7 +43,7 @@ public class ProxyServer implements Proxy {
     private final ConnectionManager listener;
     private final ConsoleHandler console;
     private final LangManager langManager;
-    private final PluginLoader pluginLoader;
+    private final PluginManagerImpl pluginLoader;
     private final UsedTokenCache reconnectTokenCache;
     private final IconCacheImpl iconCache;
     private final int port;
@@ -70,7 +70,7 @@ public class ProxyServer implements Proxy {
     private final HandlerList<ClientConnection> joined = new HandlerList<>();
 
 
-    public ProxyServer(FileWrapper<ConfigObject> config, LangManager langManager, PluginLoader pluginLoader) {
+    public ProxyServer(FileWrapper<ConfigObject> config, LangManager langManager, PluginManagerImpl pluginLoader) {
 
         this.config = config;
         this.langManager = langManager;

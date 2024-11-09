@@ -15,7 +15,7 @@ import dev.jwall64.mdcfg.codec.FileCodecRegistry;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
-import dev.jwall64.mdproxy.plugin.PluginLoader;
+import dev.jwall64.mdproxy.plugin.PluginManagerImpl;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -94,7 +94,7 @@ public class Main {
         try { Files.createDirectories(pluginDir); } catch (IOException e) {
             throw new RuntimeException("Could not create lang directory", e);
         }
-        PluginLoader loader = new PluginLoader(pluginDir);
+        PluginManagerImpl loader = new PluginManagerImpl(pluginDir);
 
         ProxyServer ps = new ProxyServer(config, manager, loader);
         try {
