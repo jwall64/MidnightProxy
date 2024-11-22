@@ -4,6 +4,7 @@ netty = "4.1.113.Final"
 mdcfg = "2.5.0-SNAPSHOT"
 mdlib = "1.7.0"
 mcore = "2.0.0-SNAPSHOT"
+smi = "0.1.0-SNAPSHOT"
 slf4j = "2.0.11"
 logback = "1.5.8"
 jbr-anno = "24.1.0"
@@ -21,6 +22,8 @@ midnight-cfg-json = { module = "dev.jwall64:midnightcfg-codec-json", version.ref
 midnight-cfg-nbt = { module = "dev.jwall64:midnightcfg-codec-nbt", version.ref="mdcfg" }
 midnight-lib = { module = "dev.jwall64:midnightlib", version.ref="mdlib" }
 midnight-core = { module = "dev.jwall64:midnightcore-common", version.ref="mcore" }
+smi = { module = "dev.jwall64:smi-api", version.ref = "smi" }
+smi-amqp = { module = "dev.jwall64:smi-impl-amqp", version.ref = "smi" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }

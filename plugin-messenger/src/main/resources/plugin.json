@@ -1,0 +1,5 @@
+{
+  "name": "Messenger",
+  "version": "${version}",
+  "main": "dev.jwall64.mdproxy.smi.MessengerPlugin"
+}
