@@ -1,0 +1,5 @@
+{
+  "name": "ResourcePack",
+  "version": "${version}",
+  "main": "dev.jwall64.mdproxy.resources.ResourcePackPlugin"
+}
