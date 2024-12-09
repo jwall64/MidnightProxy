@@ -5,10 +5,12 @@ import org.jetbrains.annotations.Nullable;
 import dev.jwall64.mcore.lang.PlaceholderManager;
 import dev.jwall64.mcore.lang.PlaceholderSupplier;
 import dev.jwall64.mcore.text.Component;
+import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
+import dev.jwall64.midnightlib.event.ConcurrentHandlerList;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
 
@@ -162,20 +164,26 @@ public interface ClientConnection {
      * Registers a task to be run in the given queue.
      * @param taskQueue The task queue name.
      * @param task The task to run.
+     * @deprecated Use events instead
      */
+    @Deprecated
     void registerTask(String taskQueue, Task task);
 
     /**
      * Executes all the tasks in the given queue before returning.
      * @param taskQueue The task queue name.
+     * @deprecated Use events instead
      */
+    @Deprecated
     void executeTasks(String taskQueue);
 
     /**
      * Executes all the tasks in the given queue asynchronously.
      * @param taskQueue The task queue name.
      * @return A completable future which will be complete when all tasks are done.
+     * @deprecated Use events instead
      */
+    @Deprecated
     CompletableFuture<Void> executeTasksAsync(String taskQueue);
 
     /**
@@ -210,7 +218,12 @@ public interface ClientConnection {
      */
     ServerboundLoginQueryPacket awaitLoginQuery(Identifier id, ByteBuf data, int timeout);
 
-
+    // Events
+    ConcurrentHandlerList<ClientConnection> preLoginEvent();
+    ConcurrentHandlerList<ClientConnection> postLoginEvent();
+    ConcurrentHandlerList<ClientConnection> enterConfigurationEvent();
+    ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> preConnectBackendEvent();
+    ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> postConnectBackendEvent();
 
     static void registerPlaceholders(PlaceholderManager manager) {
 

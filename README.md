@@ -235,7 +235,7 @@ Using the plugin API, plugins can:
 - Add console commands. (See `dev.jwall64.mdproxy.command.CommandExecutor`)
 - Add requirement types. (See `dev.jwall64.mdproxy.requirement.ConnectionCheckType`)
 - Modify the way online players are counted. (See `dev.jwall64.mdproxy.PlayerCountProvider`)
-- Run tasks during different phases of the login process. (See `dev.jwall64.mdproxy.Task`)
+- Listen for events fired during the lifecycle of the proxy or individual connections
 - Send and await plugin messages during the login and configuration phases.
 
 

@@ -2,9 +2,18 @@ package dev.jwall64.mdproxy.util;
 
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufOutputStream;
 import io.netty.handler.codec.DecoderException;
+import io.netty.handler.codec.EncoderException;
+import dev.jwall64.mcore.GameVersion;
+import dev.jwall64.mcore.text.Component;
+import dev.jwall64.mcore.text.ModernSerializer;
+import dev.jwall64.mdcfg.codec.EncodeException;
+import dev.jwall64.mdcfg.codec.NBTCodec;
+import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.VarInt;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
@@ -146,6 +155,15 @@ public class PacketBufferUtil {
         }
 
         return Optional.empty();
+    }
+
+
+    public static void writeNBTComponent(ByteBuf buf, Component component) {
+        try(ByteBufOutputStream bos = new ByteBufOutputStream(buf)) {
+            new NBTCodec(false).encode(ConfigContext.INSTANCE, ModernSerializer.INSTANCE.forContext(GameVersion.MAX), component, bos);
+        } catch (IOException | EncodeException ex) {
+            throw new EncoderException("Unable to encode NBT component!", ex);
+        }
     }
 
 }
