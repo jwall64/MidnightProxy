@@ -1,23 +1,26 @@
-package dev.jwall64.mdproxy.packet.config;
+package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
-import org.jetbrains.annotations.Nullable;
 import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
+import dev.jwall64.midnightlib.registry.Identifier;
 
-import java.util.UUID;
+public record ClientboundPluginMessagePacket(Identifier channel, ByteBuf data) implements Packet<ClientboundPacketHandler> {
 
-public record ClientboundAddResourcePackPacket(UUID packId, String url, String sha1, boolean forced, @Nullable Component message) implements Packet<ClientboundPacketHandler> {
-
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(9, (ver, phase, buf) -> {
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(
+            (ver,phase) -> {
+                if(phase == ProtocolPhase.CONFIG) {
+                    return ver.hasFeature(GameVersion.Feature.TRANSFER_PACKETS) ? 1 : 0;
+                }
+                return 25;
+            },
+            (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });
-
 
     @Override
     public PacketType<ClientboundPacketHandler> getType() {
@@ -26,11 +29,8 @@ public record ClientboundAddResourcePackPacket(UUID packId, String url, String s
 
     @Override
     public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
-        PacketBufferUtil.writeUUID(buf, packId);
-        PacketBufferUtil.writeUtf(buf, url);
-        PacketBufferUtil.writeUtf(buf, sha1);
-        buf.writeBoolean(forced);
-        PacketBufferUtil.writeOptional(buf, message, PacketBufferUtil::writeNBTComponent);
+        PacketBufferUtil.writeUtf(buf, channel.toString());
+        buf.writeBytes(data);
     }
 
     @Override

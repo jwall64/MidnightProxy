@@ -8,7 +8,9 @@ import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
+import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
+import dev.jwall64.mdproxy.packet.common.ServerboundPluginMessagePacket;
+import dev.jwall64.mdproxy.packet.common.ServerboundResourcePackStatusPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.midnightlib.event.ConcurrentHandlerList;
 import dev.jwall64.midnightlib.event.HandlerList;
@@ -218,10 +220,30 @@ public interface ClientConnection {
      */
     ServerboundLoginQueryPacket awaitLoginQuery(Identifier id, ByteBuf data, int timeout);
 
+    /**
+     * Returns whether the client was reconnected after determining their backend
+     * @return Whether the client was reconnected.
+     */
+    boolean wasReconnected();
+
+    /**
+     * Sends a resource pack to the client
+     * @param pack The resource pack to send
+     * @return A future which will complete with the client's response
+     */
+    CompletableFuture<ServerboundResourcePackStatusPacket> sendResourcePack(ResourcePack pack);
+
+
+    /**
+     * Gets the client's intent they declared when joining the server
+     * @return The client's intent
+     */
+    ServerboundHandshakePacket.Intent getIntent();
+
     // Events
     ConcurrentHandlerList<ClientConnection> preLoginEvent();
     ConcurrentHandlerList<ClientConnection> postLoginEvent();
-    ConcurrentHandlerList<ClientConnection> enterConfigurationEvent();
+    ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> enterConfigurationEvent();
     ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> preConnectBackendEvent();
     ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> postConnectBackendEvent();
 

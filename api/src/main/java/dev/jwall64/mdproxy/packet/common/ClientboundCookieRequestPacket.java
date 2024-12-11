@@ -12,7 +12,13 @@ import dev.jwall64.midnightlib.registry.Identifier;
 public record ClientboundCookieRequestPacket(Identifier key) implements Packet<ClientboundPacketHandler> {
 
 
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of((ver, phase) -> phase == ProtocolPhase.LOGIN ? 5 : 0, (ver, phase, buf) -> {
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(
+            (ver, phase) -> switch (phase) {
+                case LOGIN -> 5;
+                case CONFIG -> 0;
+                case PLAY -> 22;
+                default -> throw new IllegalArgumentException("Invalid phase: " + phase);
+            }, (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });
 

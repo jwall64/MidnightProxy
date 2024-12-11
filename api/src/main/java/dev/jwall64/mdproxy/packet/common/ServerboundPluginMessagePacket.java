@@ -1,4 +1,4 @@
-package dev.jwall64.mdproxy.packet.config;
+package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
@@ -11,7 +11,14 @@ import dev.jwall64.midnightlib.registry.Identifier;
 
 public record ServerboundPluginMessagePacket(Identifier channel, ByteBuf data) implements Packet<ServerboundPacketHandler> {
 
-    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of((ver, phase) -> ver.hasFeature(GameVersion.Feature.TRANSFER_PACKETS) ? 2 : 1, ServerboundPluginMessagePacket::read);
+    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(
+            (ver, phase) -> {
+                if(phase == ProtocolPhase.CONFIG) {
+                    return ver.hasFeature(GameVersion.Feature.TRANSFER_PACKETS) ? 2 : 1;
+                }
+                return 20;
+            },
+            ServerboundPluginMessagePacket::read);
 
     @Override
     public PacketType<ServerboundPacketHandler> getType() {

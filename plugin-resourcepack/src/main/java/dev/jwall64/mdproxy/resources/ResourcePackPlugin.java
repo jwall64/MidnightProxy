@@ -1,12 +1,18 @@
 package dev.jwall64.mdproxy.resources;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.MidnightCoreAPI;
+import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdcfg.ConfigList;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
+import dev.jwall64.mdproxy.ClientConnection;
 import dev.jwall64.mdproxy.Proxy;
+import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
+import dev.jwall64.mdproxy.packet.common.ServerboundResourcePackStatusPacket;
 import dev.jwall64.mdproxy.plugin.Plugin;
 import dev.jwall64.midnightlib.registry.Registry;
 
@@ -14,8 +20,8 @@ import dev.jwall64.midnightlib.registry.Registry;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class ResourcePackPlugin implements Plugin {
 
@@ -23,11 +29,14 @@ public class ResourcePackPlugin implements Plugin {
             .with("packs", new ConfigSection())
             .with("routes", new ConfigSection())
             .with("global", new ConfigList());
+    private static final Logger log = LoggerFactory.getLogger(ResourcePackPlugin.class);
+    private static final Component DEFAULT_KICK_MESSAGE = Component.translate("multiplayer.requiredTexturePrompt.disconnect");
 
     private final FileWrapper<ConfigObject> config;
 
-    private Map<String, List<ResourcePack>> routePacks;
-    private List<ResourcePack> globalPacks;
+    private Map<UUID, Component> kickMessages;
+    private Map<String, List<ResourcePackEntry>> routePacks;
+    private List<ResourcePackEntry> globalPacks;
 
     public ResourcePackPlugin() {
 
@@ -47,8 +56,19 @@ public class ResourcePackPlugin implements Plugin {
         config.load();
         ConfigSection root = config.getRoot().asSection();
 
-        Registry<String, ResourcePack> packs = Registry.createStringRegistry();
-        ResourcePack.SERIALIZER.mapOf().deserialize(ConfigContext.INSTANCE, root.getSection("packs")).getOrThrow().forEach(packs::register);
+        Registry<String, ResourcePackEntry> packs = Registry.createStringRegistry();
+        ResourcePackEntry.SERIALIZER.mapOf().deserialize(ConfigContext.INSTANCE, root.getSection("packs")).getOrThrow().forEach(packs::register);
+
+        kickMessages = new HashMap<>();
+        for(ResourcePackEntry ent : packs.values()) {
+            if(ent.required()) {
+                Component kickMessage = ent.kickMessage();
+                if(kickMessage == null) {
+                    kickMessage = DEFAULT_KICK_MESSAGE;
+                }
+                kickMessages.put(ent.uuid(), kickMessage);
+            }
+        }
 
         routePacks = packs.byIdSerializer().listOf().mapToList().mapOf().deserialize(ConfigContext.INSTANCE, root.getSection("routes")).getOrThrow();
         globalPacks = packs.byIdSerializer().listOf().mapToList().deserialize(ConfigContext.INSTANCE, root.getList("global")).getOrThrow();
@@ -65,21 +85,40 @@ public class ResourcePackPlugin implements Plugin {
         });
 
         proxy.clientConnectEvent().register(this, client -> {
+
+            if(client.getIntent() == ServerboundHandshakePacket.Intent.STATUS) return;
             client.preConnectBackendEvent().register(this, ev -> {
 
-                for(ResourcePack pack : globalPacks) {
-                    ev.p2.send(pack.toPacket());
+                if(ev.p2.wasReconnected()) {
+                    return;
+                }
+
+                if(!ev.p2.authenticated()) {
+                    log.info("Player {} is not authenticated!", ev.p2.username());
+                    return;
+                }
+
+                List<CompletableFuture<?>> futures = new ArrayList<>();
+                for(ResourcePackEntry pack : globalPacks) {
+                    futures.add(ev.p2.sendResourcePack(pack.toPack()).thenAccept(pck -> onComplete(client, pck)));
                 }
 
                 String id = proxy.getBackends().getId(ev.p1);
                 if(id != null && routePacks.containsKey(id)) {
-                    for(ResourcePack pack : routePacks.get(id)) {
-                        ev.p2.send(pack.toPacket());
+                    for(ResourcePackEntry pack : routePacks.get(id)) {
+                        futures.add(ev.p2.sendResourcePack(pack.toPack()).thenAccept(pck -> onComplete(client, pck)));
                     }
                 }
 
+                CompletableFuture.allOf(futures.toArray(CompletableFuture<?>[]::new)).join();
             });
         });
+    }
+
+    private void onComplete(ClientConnection conn, ServerboundResourcePackStatusPacket packet) {
+        if(packet.action() == ServerboundResourcePackStatusPacket.Action.DECLINED && kickMessages.containsKey(packet.packId())) {
+            conn.disconnect(kickMessages.get(packet.packId()));
+        }
     }
 
 }

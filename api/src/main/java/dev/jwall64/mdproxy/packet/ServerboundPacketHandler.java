@@ -1,7 +1,9 @@
 package dev.jwall64.mdproxy.packet;
 
 import dev.jwall64.mdproxy.packet.common.ServerboundCookiePacket;
-import dev.jwall64.mdproxy.packet.config.ServerboundPluginMessagePacket;
+import dev.jwall64.mdproxy.packet.common.ServerboundPluginMessagePacket;
+import dev.jwall64.mdproxy.packet.common.ServerboundResourcePackStatusPacket;
+import dev.jwall64.mdproxy.packet.config.ServerboundFinishConfigurationPacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundSettingsPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundEncryptionPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginFinishedPacket;
@@ -32,5 +34,8 @@ public interface ServerboundPacketHandler {
 
     void handle(ServerboundSettingsPacket settings);
 
+    void handle(ServerboundResourcePackStatusPacket packStatus);
+
+    void handle(ServerboundFinishConfigurationPacket packStatus);
 
 }

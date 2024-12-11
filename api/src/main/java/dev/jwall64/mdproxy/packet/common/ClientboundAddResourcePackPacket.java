@@ -1,19 +1,25 @@
-package dev.jwall64.mdproxy.packet.config;
+package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.Nullable;
 import dev.jwall64.mcore.GameVersion;
+import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
-import dev.jwall64.midnightlib.registry.Identifier;
 
-public record ClientboundSetCookiePacket(Identifier id, byte[] data) implements Packet<ClientboundPacketHandler> {
+import java.util.UUID;
 
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(10, (ver, phase, buf) -> {
+public record ClientboundAddResourcePackPacket(UUID packId, String url, String sha1, boolean forced, @Nullable Component message) implements Packet<ClientboundPacketHandler> {
+
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(
+            (ver, phase) -> phase == ProtocolPhase.CONFIG ? 9 : 75,
+            (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });
+
 
     @Override
     public PacketType<ClientboundPacketHandler> getType() {
@@ -22,15 +28,11 @@ public record ClientboundSetCookiePacket(Identifier id, byte[] data) implements 
 
     @Override
     public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
-        PacketBufferUtil.writeUtf(buf, id.toString());
-        if(data == null || data.length == 0) {
-            buf.writeByte(0);
-            return;
-        }
-
-        PacketBufferUtil.writeVarInt(buf, data.length);
-        buf.writeBytes(data);
-
+        PacketBufferUtil.writeUUID(buf, packId);
+        PacketBufferUtil.writeUtf(buf, url);
+        PacketBufferUtil.writeUtf(buf, sha1);
+        buf.writeBoolean(forced);
+        PacketBufferUtil.writeOptional(buf, message, PacketBufferUtil::writeNBTComponent);
     }
 
     @Override

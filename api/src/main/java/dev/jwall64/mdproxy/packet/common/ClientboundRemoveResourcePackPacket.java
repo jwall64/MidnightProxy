@@ -1,6 +1,7 @@
-package dev.jwall64.mdproxy.packet.config;
+package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
+import org.jetbrains.annotations.Nullable;
 import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
@@ -8,11 +9,16 @@ import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
-public record ClientboundTransferPacket(String host, int port) implements Packet<ClientboundPacketHandler> {
+import java.util.UUID;
 
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(11, (ver, phase, buf) -> {
+public record ClientboundRemoveResourcePackPacket(@Nullable UUID packId) implements Packet<ClientboundPacketHandler> {
+
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(
+            (ver,phase) -> phase == ProtocolPhase.CONFIG ? 8 : 74,
+            (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });
+
 
     @Override
     public PacketType<ClientboundPacketHandler> getType() {
@@ -21,8 +27,7 @@ public record ClientboundTransferPacket(String host, int port) implements Packet
 
     @Override
     public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
-        PacketBufferUtil.writeUtf(buf, host);
-        PacketBufferUtil.writeVarInt(buf, port);
+        PacketBufferUtil.writeOptional(buf, packId, PacketBufferUtil::writeUUID);
     }
 
     @Override
