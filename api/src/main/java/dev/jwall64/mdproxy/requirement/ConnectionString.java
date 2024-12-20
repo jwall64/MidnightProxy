@@ -5,9 +5,7 @@ import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
-import dev.jwall64.midnightlib.math.Range;
 import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.requirement.CheckType;
 
 import java.util.Collection;
 import java.util.Collections;

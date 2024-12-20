@@ -5,13 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mcore.lang.UnresolvedComponent;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
-import dev.jwall64.mdcfg.serializer.SerializeContext;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
+import dev.jwall64.mdcfg.Either;
 import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
 import dev.jwall64.midnightlib.registry.Identifier;
 import dev.jwall64.midnightlib.registry.Registry;
-import dev.jwall64.midnightlib.types.Either;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,47 +52,16 @@ public record Route(@Nullable Either<UnresolvedComponent, UnresolvedBackend> bac
         } else {
             SerializeResult<Backend> res = backend.rightOrThrow().resolve(ctx.toPlaceholderContext());
             if(!res.isComplete()) {
-                LOGGER.warn("Unable to resolve unresolved backend! {}", res.getError());
+                LOGGER.warn("Unable to resolve unresolved backend!", res.getError());
                 return null;
             }
             out = res.getOrThrow();
         }
         return out;
     }
-    
-    private static <L, R> Serializer<Either<L, R>> either(Serializer<L> ser1, Serializer<R> ser2) {
-
-        return new Serializer<Either<L, R>>() {
-            @Override
-            public <O> SerializeResult<O> serialize(SerializeContext<O> context, Either<L, R> value) {
-                if(value.hasLeft()) {
-                    return ser1.serialize(context, value.left());
-                }
-                return ser2.serialize(context, value.right());
-            }
-
-            @Override
-            public <O> SerializeResult<Either<L, R>> deserialize(SerializeContext<O> context, O value) {
-
-                SerializeResult<L> res = ser1.deserialize(context, value);
-                if(res.isComplete()) {
-                    return SerializeResult.success(Either.left(res.getOrThrow()));
-                }
-
-                SerializeResult<R> res2 = ser2.deserialize(context, value);
-                if(res2.isComplete()) {
-                    return SerializeResult.success(Either.right(res2.getOrThrow()));
-                }
-
-                return SerializeResult.failure("Unable to apply either serializer! [" + res.getError() + "], [" + res2.getError() + "]");
-            }
-        };
-        
-    }
-    
 
     public static final Serializer<Route> SERIALIZER = ObjectSerializer.create(
-            either(UnresolvedComponent.SERIALIZER, UnresolvedBackend.SERIALIZER).entry("backend", Route::backend).optional(),
+            Serializer.either(UnresolvedComponent.SERIALIZER, UnresolvedBackend.SERIALIZER).entry("backend", Route::backend).optional(),
             ConnectionRequirement.SERIALIZER.entry("requirement", Route::requirement).optional(),
             Serializer.BOOLEAN.entry("kick_on_fail", Route::kickOnFail).orElse(false),
             Serializer.STRING.entry("kick_message", Route::kickMessage).orElse("error.generic_route_failed"),
