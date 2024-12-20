@@ -1,6 +1,7 @@
 package dev.jwall64.mdproxy.whitelist;
 
 import org.jetbrains.annotations.NotNull;
+import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.SerializeContext;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
@@ -9,6 +10,7 @@ import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
 import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.midnightlib.requirement.CheckType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,21 +48,30 @@ public class WhitelistCheck implements ConnectionCheck {
     }
 
     @Override
-    public <O> SerializeResult<O> serialize(SerializeContext<O> ctx) {
-        return SERIALIZER.serialize(ctx, this);
+    public Type type() {
+        return TYPE;
     }
-
-    public static final ConnectionCheckType TYPE = new ConnectionCheckType() {
-        @Override
-        protected <O> SerializeResult<ConnectionCheck> deserializeCheck(SerializeContext<O> ctx, O value) {
-            return SERIALIZER.deserialize(ctx, value).flatMap(w -> w);
-        }
-    };
 
     private static final Serializer<WhitelistCheck> SERIALIZER = ObjectSerializer.create(
             Serializer.BOOLEAN.<WhitelistCheck>entry("require_auth", chk -> chk.requireAuth).orElse(true),
             Serializer.STRING.entry("whitelist", chk -> chk.listId),
             WhitelistCheck::new
     );
+
+    public static class Type implements ConnectionCheckType<WhitelistCheck> {
+
+        @Override
+        public TypeReference<WhitelistCheck> type() {
+            return new TypeReference<>() {};
+        }
+
+        @Override
+        public Serializer<WhitelistCheck> serializer() {
+            return SERIALIZER;
+        }
+    }
+
+    public static final Type TYPE = new Type();
+
 
 }

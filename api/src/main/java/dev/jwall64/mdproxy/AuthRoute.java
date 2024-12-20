@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy;
 
-import dev.jwall64.mdcfg.serializer.ContextObjectSerializer;
-import dev.jwall64.mdcfg.serializer.ContextSerializer;
+import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
 
@@ -11,12 +10,14 @@ public record AuthRoute(Authenticator authenticator, ConnectionRequirement requi
         this(authenticator, requirement, kickOnFail, "error.generic_auth_failed");
     }
 
-    public static final ContextSerializer<AuthRoute, Proxy> SERIALIZER = ContextObjectSerializer.create(
-            Serializer.STRING.entry("type", (route, proxy) -> Authenticator.REGISTRY.getId(route.authenticator().getType())),
-            ConnectionRequirement.SERIALIZER.<AuthRoute, Proxy>entry("requirement", (route, proxy) -> route.requirement).optional(),
-            Serializer.BOOLEAN.<AuthRoute, Proxy>entry("kick_on_fail", (route, proxy) -> route.kickOnFail).orElse(prx -> false),
-            Serializer.STRING.<AuthRoute, Proxy>entry("kick_message", (route, proxy) -> route.kickMessage).orElse(prx -> "error.generic_auth_failed"),
-            (server, auth, req, kick, msg) -> new AuthRoute(server.getAuthenticator(auth), req, kick, msg));
+    public static  Serializer<AuthRoute> serializer(Proxy proxy) {
+        return ObjectSerializer.create(
+                Serializer.STRING.entry("type", (route) -> Authenticator.REGISTRY.getId(route.authenticator().getType())),
+                ConnectionRequirement.SERIALIZER.<AuthRoute>entry("requirement", (route) -> route.requirement).optional(),
+                Serializer.BOOLEAN.<AuthRoute>entry("kick_on_fail", (route) -> route.kickOnFail).orElse(false),
+                Serializer.STRING.<AuthRoute>entry("kick_message", (route) -> route.kickMessage).orElse("error.generic_auth_failed"),
+                (auth, req, kick, msg) -> new AuthRoute(proxy.getAuthenticator(auth), req, kick, msg));
+    }
 
     public boolean canUse(ConnectionContext context) {
         if(!authenticator.canAuthenticate(context.getConnection())) {

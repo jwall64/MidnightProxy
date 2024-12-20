@@ -10,7 +10,6 @@ import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mcore.text.ModernSerializer;
 import dev.jwall64.mdcfg.codec.EncodeException;
 import dev.jwall64.mdcfg.codec.NBTCodec;
-import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.VarInt;
 
 import java.io.IOException;
@@ -160,7 +159,7 @@ public class PacketBufferUtil {
 
     public static void writeNBTComponent(ByteBuf buf, Component component) {
         try(ByteBufOutputStream bos = new ByteBufOutputStream(buf)) {
-            new NBTCodec(false).encode(ConfigContext.INSTANCE, ModernSerializer.INSTANCE.forContext(GameVersion.MAX), component, bos);
+            new NBTCodec(false).encode(GameVersion.context(GameVersion.MAX), ModernSerializer.INSTANCE, component, bos);
         } catch (IOException | EncodeException ex) {
             throw new EncoderException("Unable to encode NBT component!", ex);
         }
