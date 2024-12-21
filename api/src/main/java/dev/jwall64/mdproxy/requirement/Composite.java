@@ -10,6 +10,7 @@ import dev.jwall64.midnightlib.math.Range;
 import dev.jwall64.midnightlib.registry.Identifier;
 import dev.jwall64.midnightlib.requirement.CheckType;
 import dev.jwall64.midnightlib.requirement.CompositeCheck;
+import dev.jwall64.midnightlib.requirement.Requirement;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -69,7 +70,7 @@ public class Composite implements ConnectionCheck {
 
         public Type() {
             this.serializer = ObjectSerializer.create(
-                    ConnectionRequirement.SERIALIZER.listOf().entry("values", Composite::checks),
+                    Requirement.serializer(ConnectionCheckType.REGISTRY, ConnectionRequirement::new).listOf().entry("values", Composite::checks),
                     Range.INTEGER.entry("count", Composite::count),
                     (values, count) -> new Composite(this, values, count)
             );
