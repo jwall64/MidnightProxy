@@ -9,7 +9,6 @@ import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
 import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.requirement.CheckType;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
