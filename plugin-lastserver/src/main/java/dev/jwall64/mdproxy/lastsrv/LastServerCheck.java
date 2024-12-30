@@ -1,16 +1,14 @@
 package dev.jwall64.mdproxy.lastsrv;
 
 import org.jetbrains.annotations.NotNull;
+import dev.jwall64.mcore.data.DataManager;
 import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
-import dev.jwall64.mdcfg.serializer.SerializeContext;
-import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
 import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.requirement.CheckType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -42,11 +40,14 @@ public class LastServerCheck implements ConnectionCheck {
             return false;
         }
 
-        String data = pl.getDataManager().getData(ctx.getConnection().uuid().toString()).getOrDefault("last_server", (String) null);
-        if(data == null) return false;
+        DataManager dm = pl.getDataManager();
+        synchronized (dm) {
+            String data = dm.getData(ctx.getConnection().uuid().toString()).getOrDefault("last_server", (String) null);
+            if (data == null) return false;
 
-        ctx.setMetaProperty("last_server.backend", data);
-        return true;
+            ctx.setMetaProperty("last_server.backend", data);
+            return true;
+        }
     }
 
     @Override
