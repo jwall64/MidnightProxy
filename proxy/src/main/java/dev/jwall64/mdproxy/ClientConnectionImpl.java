@@ -15,9 +15,7 @@ import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
-import dev.jwall64.mdproxy.packet.common.ClientboundKickPacket;
-import dev.jwall64.mdproxy.packet.common.ServerboundPluginMessagePacket;
-import dev.jwall64.mdproxy.packet.common.ServerboundResourcePackStatusPacket;
+import dev.jwall64.mdproxy.packet.common.*;
 import dev.jwall64.mdproxy.packet.login.ClientboundLoginQueryPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.midnightlib.event.ConcurrentHandlerList;
@@ -58,6 +56,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
 
     private final Map<Integer, CompletableFuture<ServerboundLoginQueryPacket>> loginQueries = new HashMap<>();
     private final Map<UUID, CompletableFuture<ServerboundResourcePackStatusPacket>> resourcePacks = new HashMap<>();
+    private final Map<Identifier, CompletableFuture<byte[]>> awaitedCookies = new HashMap<>();
 
     private final HandlerList<ServerboundPluginMessagePacket> pluginMessageEvent = new HandlerList<>();
     private final HandlerList<ServerboundLoginQueryPacket> loginQueryEvent = new HandlerList<>();
@@ -80,7 +79,6 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         this.port = port;
         this.intent = intent;
 
-        //ThreadPoolExecutor svc = new ThreadPoolExecutor(1, 4, 5000L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>());
         ExecutorService svc = channel.parent().eventLoop();
 
         this.preLoginEvent = new ConcurrentHandlerList<>(svc);
@@ -445,6 +443,33 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
 
         return out;
     }
+
+    @Override
+    public void removeResourcePack(UUID pack) {
+        send(new ClientboundRemoveResourcePackPacket(pack));
+    }
+
+    @Override
+    public void clearResourcePacks() {
+        send(new ClientboundRemoveResourcePackPacket(null));
+    }
+
+    @Override
+    public CompletableFuture<byte[]> requestCookie(Identifier id) {
+
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
+        awaitedCookies.put(id, future);
+        send(new ClientboundCookieRequestPacket(id));
+        return future;
+    }
+
+    void onCookieResponse(Identifier id, byte @Nullable [] data) {
+        CompletableFuture<byte[]> fut = awaitedCookies.remove(id);
+        if(fut != null) {
+            fut.complete(data);
+        }
+    }
+
 
     @Override
     public ServerboundHandshakePacket.Intent getIntent() {
