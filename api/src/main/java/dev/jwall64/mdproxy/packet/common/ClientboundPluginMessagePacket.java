@@ -2,22 +2,20 @@ package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
-import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.PacketType;
-import dev.jwall64.mdproxy.packet.ProtocolPhase;
+import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 import dev.jwall64.midnightlib.registry.Identifier;
 
 public record ClientboundPluginMessagePacket(Identifier channel, ByteBuf data) implements Packet<ClientboundPacketHandler> {
 
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(
-            (ver,phase) -> {
-                if(phase == ProtocolPhase.CONFIG) {
-                    return ver.hasFeature(GameVersion.Feature.TRANSFER_PACKETS) ? 1 : 0;
-                }
-                return 25;
-            },
+    private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
+            .afterVersionInPhase(766, 171, ProtocolPhase.CONFIG, 1)
+            .inPhase(ProtocolPhase.CONFIG, 0)
+            .afterVersion(770, 229, 23)
+            .orElse(25)
+            .build();
+
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(ID_SELECTOR::select,
             (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });

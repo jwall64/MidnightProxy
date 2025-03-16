@@ -6,21 +6,20 @@ import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mcore.text.ModernSerializer;
 import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
-import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
-import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.PacketType;
-import dev.jwall64.mdproxy.packet.ProtocolPhase;
+import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 public record ClientboundKickPacket(Component message) implements Packet<ClientboundPacketHandler> {
 
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(
-            (ver, phase) -> switch(phase) {
-                case LOGIN -> 0;
-                case CONFIG -> 2;
-                case PLAY -> 29;
-                default -> throw new IllegalArgumentException("Invalid phase: " + phase);
-            },
+    private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
+            .inPhase(ProtocolPhase.LOGIN, 0)
+            .inPhase(ProtocolPhase.CONFIG, 2)
+            .afterVersion(770, 229, 27)
+            .orElse(29)
+            .build();
+
+
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(ID_SELECTOR::select,
         (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });

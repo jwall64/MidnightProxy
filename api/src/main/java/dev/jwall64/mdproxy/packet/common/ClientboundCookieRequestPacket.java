@@ -2,23 +2,22 @@ package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
-import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.PacketType;
-import dev.jwall64.mdproxy.packet.ProtocolPhase;
+import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 import dev.jwall64.midnightlib.registry.Identifier;
 
 public record ClientboundCookieRequestPacket(Identifier key) implements Packet<ClientboundPacketHandler> {
 
+    private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
+            .inPhase(ProtocolPhase.LOGIN, 5)
+            .inPhase(ProtocolPhase.CONFIG, 10)
+            .afterVersion(770, 229, 20)
+            .orElse(22)
+            .build();
 
-    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(
-            (ver, phase) -> switch (phase) {
-                case LOGIN -> 5;
-                case CONFIG -> 0;
-                case PLAY -> 22;
-                default -> throw new IllegalArgumentException("Invalid phase: " + phase);
-            }, (ver, phase, buf) -> {
+
+    public static final PacketType<ClientboundPacketHandler> TYPE = PacketType.of(ID_SELECTOR::select,
+            (ver, phase, buf) -> {
         throw new UnsupportedOperationException("Cannot deserialize clientbound packet!");
     });
 

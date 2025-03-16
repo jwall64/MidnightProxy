@@ -2,22 +2,20 @@ package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
 import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mdproxy.packet.Packet;
-import dev.jwall64.mdproxy.packet.PacketType;
-import dev.jwall64.mdproxy.packet.ProtocolPhase;
-import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
+import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 import dev.jwall64.midnightlib.registry.Identifier;
 
 public record ServerboundPluginMessagePacket(Identifier channel, ByteBuf data) implements Packet<ServerboundPacketHandler> {
 
-    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(
-            (ver, phase) -> {
-                if(phase == ProtocolPhase.CONFIG) {
-                    return ver.hasFeature(GameVersion.Feature.TRANSFER_PACKETS) ? 2 : 1;
-                }
-                return 20;
-            },
+    private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
+            .afterVersionInPhase(766, 171, ProtocolPhase.CONFIG, 2)
+            .inPhase(ProtocolPhase.CONFIG, 1)
+            .orElse(20)
+            .build();
+
+
+    public static final PacketType<ServerboundPacketHandler> TYPE = PacketType.of(ID_SELECTOR::select,
             ServerboundPluginMessagePacket::read);
 
     @Override
