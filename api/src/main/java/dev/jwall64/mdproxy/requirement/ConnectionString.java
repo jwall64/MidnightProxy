@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.requirement;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
@@ -61,11 +60,6 @@ public class ConnectionString implements ConnectionCheck {
                     .or(Serializer.STRING.map(set -> SerializeResult.ofNullable(set.stream().findFirst().orElse(null)), str -> SerializeResult.success(Collections.singleton(str))))
                     .fieldOf("value")
                     .flatMap(ConnectionString::values, values -> new ConnectionString(this, values));
-        }
-
-        @Override
-        public TypeReference<ConnectionString> type() {
-            return new TypeReference<ConnectionString>() {};
         }
 
         @Override

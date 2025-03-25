@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 import java.util.Locale;
@@ -16,7 +15,7 @@ public record ServerboundHandshakePacket(int protocolVersion, String address, in
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
         PacketBufferUtil.writeVarInt(buf, protocolVersion);
         PacketBufferUtil.writeUtf(buf, address);
         buf.writeShort(port);
@@ -28,7 +27,7 @@ public record ServerboundHandshakePacket(int protocolVersion, String address, in
         handler.handle(this);
     }
 
-    public static ServerboundHandshakePacket read(GameVersion version, ProtocolPhase phase,ByteBuf buffer) {
+    public static ServerboundHandshakePacket read(int version, ProtocolPhase phase,ByteBuf buffer) {
 
         int proto = PacketBufferUtil.readVarInt(buffer);
         String addr = PacketBufferUtil.readUtf(buffer, 255).toLowerCase(Locale.ROOT);

@@ -2,7 +2,6 @@ package dev.jwall64.mdproxy.requirement;
 
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
@@ -74,11 +73,6 @@ public class Composite implements ConnectionCheck {
                     Range.INTEGER.entry("count", Composite::count),
                     (values, count) -> new Composite(this, values, count)
             );
-        }
-
-        @Override
-        public TypeReference<Composite> type() {
-            return new TypeReference<Composite>() {};
         }
 
         @Override

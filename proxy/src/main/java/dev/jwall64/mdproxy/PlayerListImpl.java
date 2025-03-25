@@ -1,7 +1,12 @@
 package dev.jwall64.mdproxy;
 
-import dev.jwall64.mcore.text.Component;
 
+import dev.jwall64.pseudonym.text.Component;
+import dev.jwall64.pseudonym.text.Content;
+import dev.jwall64.pseudonym.text.ImmutableComponent;
+import dev.jwall64.pseudonym.text.Style;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -46,7 +51,7 @@ public class PlayerListImpl implements PlayerList {
         ClientConnection prev = connections.put(playerId, conn);
 
         if(prev != null) {
-            prev.disconnect(Component.translate("multiplayer.disconnect.duplicate_login"));
+            prev.disconnect(new ImmutableComponent(new Content.Translate("multiplayer.disconnect.duplicate_login"), Style.EMPTY, Collections.emptyList()));
         }
     }
 

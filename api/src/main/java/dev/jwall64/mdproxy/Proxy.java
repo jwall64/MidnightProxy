@@ -1,18 +1,23 @@
 package dev.jwall64.mdproxy;
 
-import dev.jwall64.mcore.lang.PlaceholderManager;
-import dev.jwall64.mcore.lang.PlaceholderSupplier;
 import dev.jwall64.mdcfg.ConfigSection;
+import dev.jwall64.mdcfg.codec.FileCodecRegistry;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Registry;
+import dev.jwall64.pseudonym.ParameterTransformer;
+import dev.jwall64.pseudonym.Placeholder;
+import dev.jwall64.pseudonym.PlaceholderManager;
+import dev.jwall64.pseudonym.UnresolvedMessage;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -198,23 +203,31 @@ public interface Proxy {
      */
     HandlerList<Proxy> shutdownEvent();
 
+    /**
+     * Gets the global FileCodecRegistry for the proxy.
+     * @return A FileCodecRegistry
+     */
+    FileCodecRegistry fileCodecRegistry();
+
 
     static void registerPlaceholders(PlaceholderManager manager) {
 
-        manager.registerSupplier("proxy_online_players", PlaceholderSupplier.inline(ctx -> ctx.onValue(Proxy.class, prx -> prx.getOnlinePlayers() + "")));
-        manager.registerSupplier("proxy_player_limit", PlaceholderSupplier.inline(ctx -> ctx.onValue(Proxy.class, prx -> prx.getPlayerLimit() + "")));
+        manager.register(Placeholder.of("proxy_online_players", String.class, ctx -> ctx.context().getFirst(Proxy.class).map(Proxy::getOnlinePlayers).map(Objects::toString)));
+        manager.register(Placeholder.of("proxy_player_limit", String.class, ctx -> ctx.context().getFirst(Proxy.class).map(Proxy::getPlayerLimit).map(Objects::toString)));
 
-        manager.registerSupplier("system_time", PlaceholderSupplier.inline(ctx -> {
-            String format = ctx.getParameter() == null ? "dd/MM/yyyy HH:mm:ss" : ctx.getParameter().allText();
+        manager.register(Placeholder.of("system_time", String.class, ctx -> {
+            String format = UnresolvedMessage.resolve(ctx.param(), ctx.context());
+            if(format.isEmpty()) format = "dd/MM/yyyy HH:mm:ss";
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
-            return Instant.now().atZone(ZoneId.systemDefault()).format(dtf);
-        }));
+            return Optional.of(Instant.now().atZone(ZoneId.systemDefault()).format(dtf));
+        }, ParameterTransformer.IDENTITY));
 
-        manager.registerSupplier("system_time_utc", PlaceholderSupplier.inline(ctx -> {
-            String format = ctx.getParameter() == null ? "dd/MM/yyyy HH:mm:ss" : ctx.getParameter().allText();
+        manager.register(Placeholder.of("system_time_utc", String.class, ctx -> {
+            String format = UnresolvedMessage.resolve(ctx.param(), ctx.context());
+            if(format.isEmpty()) format = "dd/MM/yyyy HH:mm:ss";
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
-            return Instant.now().atZone(ZoneOffset.UTC).format(dtf);
-        }));
+            return Optional.of(Instant.now().atZone(ZoneOffset.UTC).format(dtf));
+        }, ParameterTransformer.IDENTITY));
     }
 
 }

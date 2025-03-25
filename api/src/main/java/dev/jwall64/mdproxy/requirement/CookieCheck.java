@@ -1,13 +1,11 @@
 package dev.jwall64.mdproxy.requirement;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.requirement.CheckType;
 
 import java.util.*;
 
@@ -66,11 +64,6 @@ public class CookieCheck implements ConnectionCheck {
                             .or(Serializer.STRING.map(set -> SerializeResult.ofNullable(set.stream().findFirst().orElse(null)), str -> SerializeResult.success(Collections.singleton(str))))
                             .entry("values", CookieCheck::values),
                     (cookie, values) -> new CookieCheck(this, cookie, values));
-        }
-
-        @Override
-        public TypeReference<CookieCheck> type() {
-            return new TypeReference<CookieCheck>() {};
         }
 
         @Override

@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet.status;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
@@ -17,7 +16,7 @@ public class ServerboundStatusPacket implements Packet<ServerboundPacketHandler>
     }
 
     @Override
-    public void write(GameVersion ver, ProtocolPhase phase, ByteBuf buf) { }
+    public void write(int ver, ProtocolPhase phase, ByteBuf buf) { }
 
     @Override
     public void handle(ServerboundPacketHandler handler) {

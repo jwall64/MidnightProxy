@@ -2,10 +2,9 @@ package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
-import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
+import dev.jwall64.pseudonym.text.Component;
 
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public record ClientboundAddResourcePackPacket(UUID packId, String url, String s
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
         PacketBufferUtil.writeUUID(buf, packId);
         PacketBufferUtil.writeUtf(buf, url);
         PacketBufferUtil.writeUtf(buf, sha1);

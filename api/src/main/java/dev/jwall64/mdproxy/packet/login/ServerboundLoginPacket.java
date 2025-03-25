@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet.login;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
@@ -20,7 +19,7 @@ public record ServerboundLoginPacket(String username, UUID uuid) implements Pack
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
 
         PacketBufferUtil.writeUtf(buf, username, 16);
         PacketBufferUtil.writeUUID(buf, uuid);
@@ -30,7 +29,7 @@ public record ServerboundLoginPacket(String username, UUID uuid) implements Pack
         handler.handle(this);
     }
 
-    public static ServerboundLoginPacket read(GameVersion ver, ProtocolPhase phase, ByteBuf buf) {
+    public static ServerboundLoginPacket read(int ver, ProtocolPhase phase, ByteBuf buf) {
 
         String name = PacketBufferUtil.readUtf(buf, 16);
         UUID uid = PacketBufferUtil.readUUID(buf);

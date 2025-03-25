@@ -1,6 +1,7 @@
 package dev.jwall64.mdproxy;
 
-import dev.jwall64.mcore.text.Component;
+
+import dev.jwall64.pseudonym.text.Component;
 
 import java.util.UUID;
 import java.util.stream.Stream;

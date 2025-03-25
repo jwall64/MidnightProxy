@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 import dev.jwall64.midnightlib.registry.Identifier;
@@ -26,7 +25,7 @@ public record ClientboundPluginMessagePacket(Identifier channel, ByteBuf data) i
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
         PacketBufferUtil.writeUtf(buf, channel.toString());
         buf.writeBytes(data);
     }

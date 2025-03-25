@@ -1,13 +1,12 @@
 package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mcore.text.Component;
-import dev.jwall64.mcore.text.ModernSerializer;
 import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
+import dev.jwall64.pseudonym.text.Component;
+import dev.jwall64.pseudonym.text.ProtocolContext;
 
 public record ClientboundKickPacket(Component message) implements Packet<ClientboundPacketHandler> {
 
@@ -30,10 +29,10 @@ public record ClientboundKickPacket(Component message) implements Packet<Clientb
     }
 
     @Override
-    public void write(GameVersion ver, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
 
         if (phase == ProtocolPhase.LOGIN) {
-            PacketBufferUtil.writeUtf(buf, JSONCodec.minified().encodeToString(ConfigContext.INSTANCE, ModernSerializer.INSTANCE.serialize(GameVersion.context(ver), message).getOrThrow()));
+            PacketBufferUtil.writeUtf(buf, JSONCodec.minified().encodeToString(ConfigContext.INSTANCE, Component.SERIALIZER.serialize(new ProtocolContext<>(ConfigContext.INSTANCE, version), message).getOrThrow()));
         } else {
             PacketBufferUtil.writeNBTComponent(buf, message);
         }

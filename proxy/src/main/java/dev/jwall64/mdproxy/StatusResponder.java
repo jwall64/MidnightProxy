@@ -1,7 +1,5 @@
 package dev.jwall64.mdproxy;
 
-import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
@@ -10,10 +8,16 @@ import dev.jwall64.mdproxy.packet.status.ClientboundPingPacket;
 import dev.jwall64.mdproxy.packet.status.ClientboundStatusPacket;
 import dev.jwall64.mdproxy.packet.status.ServerboundPingPacket;
 import dev.jwall64.mdproxy.packet.status.ServerboundStatusPacket;
+import dev.jwall64.pseudonym.text.Component;
+import dev.jwall64.pseudonym.text.Content;
+import dev.jwall64.pseudonym.text.ImmutableComponent;
+import dev.jwall64.pseudonym.text.Style;
+
+import java.util.Collections;
 
 public class StatusResponder implements ClientboundPacketHandler {
 
-    private static final Component HANDLED_MESSAGE = Component.translate("multiplayer.status.request_handled");
+    private static final Component HANDLED_MESSAGE = new ImmutableComponent(new Content.Translate("multiplayer.status.request_handled"), Style.EMPTY, Collections.emptyList());
 
     private final ClientConnectionImpl conn;
     private final ProxyServer server;
@@ -38,7 +42,7 @@ public class StatusResponder implements ClientboundPacketHandler {
                 throw new IllegalStateException("Unable to find backend " + backendName + "!");
             }
 
-            server.getConnectionManager().connectToBackend(conn, b, playerVersion, server.getBackendTimeout())
+            server.getConnectionManager().connectToBackend(conn, b, playerVersion.protocolVersion(), server.getBackendTimeout())
                     .thenAccept(backend -> {
                         backend.setupStatus(this);
                         backend.send(new ServerboundHandshakePacket(conn.protocolVersion(), conn.hostname(), conn.port(), ServerboundHandshakePacket.Intent.STATUS));

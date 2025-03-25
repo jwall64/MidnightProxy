@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet.config;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
@@ -20,7 +19,7 @@ public class ClientboundFinishConfigurationPacket implements Packet<ClientboundP
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) { }
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) { }
 
     @Override
     public void handle(ClientboundPacketHandler handler) {

@@ -2,7 +2,6 @@ package dev.jwall64.mdproxy.packet.common;
 
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
@@ -28,7 +27,7 @@ public record ClientboundRemoveResourcePackPacket(@Nullable UUID packId) impleme
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
         PacketBufferUtil.writeOptional(buf, packId, PacketBufferUtil::writeUUID);
     }
 

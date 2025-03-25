@@ -1,14 +1,15 @@
 package dev.jwall64.mdproxy.jwt;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mcore.lang.PlaceholderContext;
-import dev.jwall64.mcore.lang.UnresolvedComponent;
 import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.*;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
+import dev.jwall64.mdproxy.util.MessageUtil;
 import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.pseudonym.PipelineContext;
+import dev.jwall64.pseudonym.UnresolvedMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -22,9 +23,9 @@ public class JWTCheck implements ConnectionCheck {
     private final String key;
     private final KeyType<?> keyType;
     private final List<String> outputClaims;
-    private final Map<String, UnresolvedComponent> expectClaims;
+    private final Map<String, UnresolvedMessage<String>> expectClaims;
 
-    protected JWTCheck(boolean requireAuth, Identifier cookie, boolean requireEncryption, String singleUseKey, String key, KeyType<?> keyType, Collection<String> outputClaims, Map<String, UnresolvedComponent> expectClaims) {
+    protected JWTCheck(boolean requireAuth, Identifier cookie, boolean requireEncryption, String singleUseKey, String key, KeyType<?> keyType, Collection<String> outputClaims, Map<String, UnresolvedMessage<String>> expectClaims) {
         this.cookie = cookie;
         this.requireAuth = requireAuth;
         this.requireEncryption = requireEncryption;
@@ -45,11 +46,10 @@ public class JWTCheck implements ConnectionCheck {
 
         Map<String, String> require = new HashMap<>();
 
-        PlaceholderContext placeholderContext = new PlaceholderContext();
-        placeholderContext.addValue(ctx.getConnection());
+        PipelineContext pipelineContext = PipelineContext.of(ctx.getConnection());
 
-        for(Map.Entry<String, UnresolvedComponent> cmp : expectClaims.entrySet()) {
-            require.put(cmp.getKey(), cmp.getValue().resolveFlat(placeholderContext));
+        for(Map.Entry<String, UnresolvedMessage<String>> cmp : expectClaims.entrySet()) {
+            require.put(cmp.getKey(), UnresolvedMessage.resolve(cmp.getValue(), pipelineContext));
         }
 
         KeyStore store = ctx.getProxy().getPluginManager().get(JWTPlugin.class).getKeyStore();
@@ -131,7 +131,7 @@ public class JWTCheck implements ConnectionCheck {
             Serializer.STRING.<JWTCheck>entry("key", check -> check.key).orElse("default"),
             KEY_TYPE.<JWTCheck>entry("key_type", check -> check.keyType).orElse(null),
             Serializer.STRING.listOf().entry("output_claims", check -> check.outputClaims),
-            UnresolvedComponent.SERIALIZER.mapOf().entry("expect_claims", check -> check.expectClaims),
+            MessageUtil.PARSE_SERIALIZER.mapOf().entry("expect_claims", check -> check.expectClaims),
             JWTCheck::new
     );
 

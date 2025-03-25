@@ -7,9 +7,6 @@ import io.netty.channel.ChannelFutureListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.mcore.lang.LocaleHolder;
-import dev.jwall64.mcore.lang.UnresolvedComponent;
-import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
@@ -18,9 +15,15 @@ import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.common.*;
 import dev.jwall64.mdproxy.packet.login.ClientboundLoginQueryPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
+import dev.jwall64.mdproxy.util.MessageUtil;
 import dev.jwall64.midnightlib.event.ConcurrentHandlerList;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.pseudonym.PipelineContext;
+import dev.jwall64.pseudonym.UnresolvedMessage;
+import dev.jwall64.pseudonym.lang.LocaleHolder;
+import dev.jwall64.pseudonym.text.Component;
+import dev.jwall64.pseudonym.text.TextUtil;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -249,8 +252,8 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         }
     }
 
-    public void disconnect(UnresolvedComponent component) {
-        disconnect(component.resolveFor(this));
+    public void disconnect(UnresolvedMessage<String> component) {
+        disconnect(TextUtil.COMPONENT_RESOLVER.accept(component, PipelineContext.of(this)));
     }
 
 
@@ -276,7 +279,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         if(component == null) {
             LOGGER.info("Disconnecting player {}", username());
         } else {
-            if(log) LOGGER.info("Disconnecting player {}: {}", username(), component.allText());
+            if(log) LOGGER.info("Disconnecting player {}: {}", username(), MessageUtil.flatten(component));
             if(backend == null) {
                 send(new ClientboundKickPacket(component));
             }

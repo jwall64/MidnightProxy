@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet.login;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
@@ -17,7 +16,7 @@ public class ServerboundLoginFinishedPacket implements Packet<ServerboundPacketH
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) { }
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) { }
 
     @Override
     public void handle(ServerboundPacketHandler handler) {

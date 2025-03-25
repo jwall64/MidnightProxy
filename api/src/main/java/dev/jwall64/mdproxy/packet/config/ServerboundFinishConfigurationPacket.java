@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet.config;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdproxy.packet.*;
 
 public class ServerboundFinishConfigurationPacket implements Packet<ServerboundPacketHandler> {
@@ -15,7 +14,7 @@ public class ServerboundFinishConfigurationPacket implements Packet<ServerboundP
     }
 
     @Override
-    public void write(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
         throw new UnsupportedOperationException("Cannot write serverbound packet");
     }
 

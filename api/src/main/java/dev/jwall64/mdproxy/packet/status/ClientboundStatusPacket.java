@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.packet.status;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mcore.GameVersion;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
@@ -27,7 +26,7 @@ public record ClientboundStatusPacket(ConfigSection data) implements Packet<Clie
     }
 
     @Override
-    public void write(GameVersion ver, ProtocolPhase phase, ByteBuf buf) {
+    public void write(int version, ProtocolPhase phase, ByteBuf buf) {
 
         PacketBufferUtil.writeUtf(buf, JSONCodec.minified().encodeToString(ConfigContext.INSTANCE, data));
     }
@@ -37,7 +36,7 @@ public record ClientboundStatusPacket(ConfigSection data) implements Packet<Clie
         handler.handle(this);
     }
 
-    public static ClientboundStatusPacket read(GameVersion version, ProtocolPhase phase, ByteBuf buf) {
+    public static ClientboundStatusPacket read(int  version, ProtocolPhase phase, ByteBuf buf) {
 
         return new ClientboundStatusPacket(JSONCodec.loadConfig(PacketBufferUtil.readUtf(buf)).asSection());
     }

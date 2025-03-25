@@ -2,9 +2,8 @@ package dev.jwall64.mdproxy.lastsrv;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.mcore.MidnightCoreAPI;
-import dev.jwall64.mcore.data.DataManager;
 import dev.jwall64.mdproxy.BackendConnection;
+import dev.jwall64.mdproxy.DataManager;
 import dev.jwall64.mdproxy.Proxy;
 import dev.jwall64.mdproxy.plugin.Plugin;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
@@ -16,21 +15,23 @@ import java.nio.file.Path;
 public class LastServerPlugin implements Plugin {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("LastServer");
-    private final DataManager dataManager;
+    private DataManager dataManager;
 
     public LastServerPlugin() {
-        Path configFolder = MidnightCoreAPI.GLOBAL_CONFIG_DIRECTORY.get().resolve("lastserver");
-        try { Files.createDirectories(configFolder); } catch (IOException e) {
-            throw new RuntimeException("Could not create config directory", e);
-        }
-
-        dataManager = new DataManager(configFolder);
 
         ConnectionCheckType.REGISTRY.tryRegister("last_server", LastServerCheck.TYPE);
     }
 
     @Override
     public void initialize(Proxy proxy) {
+
+        Path configFolder = proxy.getPluginManager().configFolder().resolve("lastserver");
+        try { Files.createDirectories(configFolder); } catch (IOException e) {
+            throw new RuntimeException("Could not create config directory", e);
+        }
+
+        dataManager = new DataManager(configFolder, proxy.fileCodecRegistry());
+
         proxy.clientDisconnectEvent().register(this, client -> {
 
             BackendConnection conn = client.getBackendConnection();

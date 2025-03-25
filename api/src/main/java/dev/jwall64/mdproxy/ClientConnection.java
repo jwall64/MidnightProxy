@@ -2,9 +2,6 @@ package dev.jwall64.mdproxy;
 
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.Nullable;
-import dev.jwall64.mcore.lang.PlaceholderManager;
-import dev.jwall64.mcore.lang.PlaceholderSupplier;
-import dev.jwall64.mcore.text.Component;
 import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdproxy.packet.ClientboundPacketHandler;
 import dev.jwall64.mdproxy.packet.Packet;
@@ -15,6 +12,9 @@ import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.midnightlib.event.ConcurrentHandlerList;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.pseudonym.Placeholder;
+import dev.jwall64.pseudonym.PlaceholderManager;
+import dev.jwall64.pseudonym.text.Component;
 
 import java.net.InetAddress;
 import java.util.Objects;
@@ -266,12 +266,12 @@ public interface ClientConnection {
 
     static void registerPlaceholders(PlaceholderManager manager) {
 
-        manager.registerSupplier("client_username", PlaceholderSupplier.inline(ctx -> ctx.onValue(ClientConnection.class, ClientConnection::username)));
-        manager.registerSupplier("client_uuid", PlaceholderSupplier.inline(ctx -> Objects.toString(ctx.onValue(ClientConnection.class, ClientConnection::uuid))));
-        manager.registerSupplier("client_protocol", PlaceholderSupplier.inline(ctx -> Objects.toString(ctx.onValue(ClientConnection.class, ClientConnection::protocolVersion))));
-        manager.registerSupplier("client_hostname", PlaceholderSupplier.inline(ctx -> ctx.onValue(ClientConnection.class, ClientConnection::hostname)));
-        manager.registerSupplier("client_port", PlaceholderSupplier.inline(ctx -> Objects.toString(ctx.onValue(ClientConnection.class, ClientConnection::port))));
-        manager.registerSupplier("client_locale", PlaceholderSupplier.inline(ctx -> ctx.onValue(ClientConnection.class, ClientConnection::locale)));
+        manager.register(Placeholder.of("client_username", String.class, ctx -> ctx.context().getFirst(ClientConnection.class).map(ClientConnection::username)));
+        manager.register(Placeholder.of("client_uuid", String.class, ctx -> ctx.context().getFirst(ClientConnection.class).map(ClientConnection::uuid).map(Objects::toString)));
+        manager.register(Placeholder.of("client_protocol", String.class, ctx -> ctx.context().getFirst(ClientConnection.class).map(ClientConnection::protocolVersion).map(Objects::toString)));
+        manager.register(Placeholder.of("client_hostname", String.class, ctx -> ctx.context().getFirst(ClientConnection.class).map(ClientConnection::hostname)));
+        manager.register(Placeholder.of("client_port", String.class, ctx -> ctx.context().getFirst(ClientConnection.class).map(ClientConnection::port).map(Objects::toString)));
+        manager.register(Placeholder.of("client_locale", String.class, ctx -> ctx.context().getFirst(ClientConnection.class).map(ClientConnection::locale)));
 
     }
 

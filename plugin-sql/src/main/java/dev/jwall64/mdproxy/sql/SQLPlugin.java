@@ -1,6 +1,5 @@
 package dev.jwall64.mdproxy.sql;
 
-import dev.jwall64.mcore.MidnightCoreAPI;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
@@ -32,12 +31,12 @@ public class SQLPlugin implements Plugin {
     @Override
     public void initialize(Proxy proxy) {
 
-        Path configFolder = MidnightCoreAPI.GLOBAL_CONFIG_DIRECTORY.get().resolve("whitelist");
+        Path configFolder = proxy.getPluginManager().configFolder().resolve("whitelist");
         try { Files.createDirectories(configFolder); } catch (IOException e) {
             throw new RuntimeException("Could not create whitelist directory", e);
         }
 
-        FileWrapper<ConfigObject> config = MidnightCoreAPI.FILE_CODEC_REGISTRY.findOrCreate(ConfigContext.INSTANCE, "config", configFolder, DEFAULT_CONFIG);
+        FileWrapper<ConfigObject> config = proxy.fileCodecRegistry().findOrCreate(ConfigContext.INSTANCE, "config", configFolder, DEFAULT_CONFIG);
         registry = PresetRegistry.SERIALIZER.deserialize(ConfigContext.INSTANCE, config.getRoot()).getOrThrow();
     }
 

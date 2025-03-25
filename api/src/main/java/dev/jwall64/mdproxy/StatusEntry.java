@@ -1,14 +1,14 @@
 package dev.jwall64.mdproxy;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mcore.GameVersion;
-import dev.jwall64.mcore.text.Component;
-import dev.jwall64.mcore.text.ConfigSerializer;
-import dev.jwall64.mcore.text.ModernSerializer;
 import dev.jwall64.mdcfg.ConfigSection;
+import dev.jwall64.mdcfg.serializer.InlineSerializer;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
+import dev.jwall64.mdproxy.util.MessageUtil;
+import dev.jwall64.pseudonym.text.Component;
+import dev.jwall64.pseudonym.text.ConfigTextParser;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +58,7 @@ public record StatusEntry(int priority, Integer playersOverride, Integer maxPlay
             out.getOrCreateSection("players").set("sample", playerSample, PlayerInfo.SERIALIZER.listOf());
         }
         if(message != null) {
-            out.set("description", message, ModernSerializer.INSTANCE);
+            out.set("description", message, Component.SERIALIZER);
         }
         if(icon != null) {
             String iconB64 = cache.getIconB64(icon);
@@ -86,7 +86,7 @@ public record StatusEntry(int priority, Integer playersOverride, Integer maxPlay
             Serializer.INT.entry("players_override", StatusEntry::playersOverride).optional(),
             Serializer.INT.entry("max_players_override", StatusEntry::maxPlayersOverride).optional(),
             PlayerInfo.SERIALIZER.listOf().entry("player_sample", StatusEntry::playerSample).optional(),
-            ConfigSerializer.INSTANCE.entry("message", StatusEntry::message).optional(),
+            MessageUtil.CONFIG_SERIALIZER.entry("message", StatusEntry::message).optional(),
             Serializer.STRING.entry("icon", StatusEntry::icon).optional(),
             Serializer.BOOLEAN.entry("secure_chat", StatusEntry::secureChat).optional(),
             Serializer.BOOLEAN.entry("preview_chat", StatusEntry::previewChat).optional(),

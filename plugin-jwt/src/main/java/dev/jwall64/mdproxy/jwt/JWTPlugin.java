@@ -2,7 +2,6 @@ package dev.jwall64.mdproxy.jwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.mcore.MidnightCoreAPI;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
@@ -25,12 +24,12 @@ public class JWTPlugin implements Plugin {
     @Override
     public void initialize(Proxy proxy) {
 
-        Path configFolder = MidnightCoreAPI.GLOBAL_CONFIG_DIRECTORY.get().resolve("jwt");
+        Path configFolder = proxy.getPluginManager().configFolder().resolve("jwt");
         try { Files.createDirectories(configFolder); } catch (IOException e) {
             throw new RuntimeException("Could not create lang directory", e);
         }
 
-        FileWrapper<ConfigObject> config = MidnightCoreAPI.FILE_CODEC_REGISTRY.findOrCreate(ConfigContext.INSTANCE, "config", configFolder, DEFAULT_CONFIG);
+        FileWrapper<ConfigObject> config = proxy.fileCodecRegistry().findOrCreate(ConfigContext.INSTANCE, "config", configFolder, DEFAULT_CONFIG);
 
         Path keyStoreDir = configFolder.resolve(config.getRoot().asSection().getString("key_store_path"));
         try { Files.createDirectories(keyStoreDir); } catch (IOException e) {

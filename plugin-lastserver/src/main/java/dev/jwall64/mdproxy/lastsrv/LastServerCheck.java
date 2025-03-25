@@ -1,11 +1,11 @@
 package dev.jwall64.mdproxy.lastsrv;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mcore.data.DataManager;
 import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
+import dev.jwall64.mdproxy.DataManager;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
 import dev.jwall64.midnightlib.registry.Identifier;
