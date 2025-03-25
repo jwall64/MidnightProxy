@@ -2,13 +2,11 @@ package dev.jwall64.mdproxy;
 
 import org.jetbrains.annotations.NotNull;
 import dev.jwall64.mdcfg.ConfigSection;
-import dev.jwall64.mdcfg.serializer.InlineSerializer;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
 import dev.jwall64.mdproxy.util.MessageUtil;
 import dev.jwall64.pseudonym.text.Component;
-import dev.jwall64.pseudonym.text.ConfigTextParser;
 
 import java.util.Collection;
 import java.util.List;

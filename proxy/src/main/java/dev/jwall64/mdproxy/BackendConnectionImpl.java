@@ -1,6 +1,6 @@
 package dev.jwall64.mdproxy;
 
-import io.netty.channel.*;
+import io.netty.channel.Channel;
 import org.jetbrains.annotations.Nullable;
 import dev.jwall64.mdproxy.netty.*;
 import dev.jwall64.mdproxy.packet.*;

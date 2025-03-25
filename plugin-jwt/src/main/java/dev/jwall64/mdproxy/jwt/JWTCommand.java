@@ -1,5 +1,7 @@
 package dev.jwall64.mdproxy.jwt;
 
+import dev.jwall64.jwt.KeyStore;
+import dev.jwall64.jwt.KeyType;
 import dev.jwall64.mdproxy.command.ArgumentParser;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.CommandSender;

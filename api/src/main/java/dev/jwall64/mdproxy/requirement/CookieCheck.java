@@ -7,7 +7,9 @@ import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.registry.Identifier;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 
 public class CookieCheck implements ConnectionCheck {
 

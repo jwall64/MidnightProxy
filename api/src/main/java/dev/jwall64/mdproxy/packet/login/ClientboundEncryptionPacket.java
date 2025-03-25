@@ -7,7 +7,6 @@ import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
-import dev.jwall64.pseudonym.text.ProtocolContext;
 
 public record ClientboundEncryptionPacket(String serverId, byte[] publicKey, byte[] verifyToken, boolean authEnabled) implements Packet<ClientboundPacketHandler> {
 

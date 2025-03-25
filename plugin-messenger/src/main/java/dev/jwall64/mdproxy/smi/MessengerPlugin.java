@@ -8,12 +8,7 @@ import dev.jwall64.mdproxy.Proxy;
 import dev.jwall64.mdproxy.plugin.Plugin;
 import dev.jwall64.midnightlib.registry.Identifier;
 import dev.jwall64.midnightlib.registry.Registry;
-import dev.jwall64.smi.Messenger;
-import dev.jwall64.smi.MessengerType;
-import dev.jwall64.smi.MessengerManager;
-import dev.jwall64.smi.MessengerManagerImpl;
-import dev.jwall64.smi.AmqpMessenger;
-
+import dev.jwall64.smi.*;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -3,8 +3,6 @@ package dev.jwall64.mdproxy.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdproxy.VarInt;
 

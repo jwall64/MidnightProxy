@@ -20,7 +20,6 @@ import dev.jwall64.pseudonym.text.Content;
 import dev.jwall64.pseudonym.text.ImmutableComponent;
 import dev.jwall64.pseudonym.text.Style;
 
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

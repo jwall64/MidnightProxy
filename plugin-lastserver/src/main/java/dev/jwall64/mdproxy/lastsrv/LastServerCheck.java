@@ -1,7 +1,6 @@
 package dev.jwall64.mdproxy.lastsrv;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
@@ -61,11 +60,6 @@ public class LastServerCheck implements ConnectionCheck {
     );
 
     public static class Type implements ConnectionCheckType<LastServerCheck> {
-
-        @Override
-        public TypeReference<LastServerCheck> type() {
-            return new TypeReference<>() {};
-        }
 
         @Override
         public Serializer<LastServerCheck> serializer() {

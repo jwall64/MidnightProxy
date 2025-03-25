@@ -1,8 +1,11 @@
 package dev.jwall64.mdproxy.jwt;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mdcfg.TypeReference;
-import dev.jwall64.mdcfg.serializer.*;
+import dev.jwall64.jwt.*;
+import dev.jwall64.mdcfg.serializer.InlineSerializer;
+import dev.jwall64.mdcfg.serializer.ObjectSerializer;
+import dev.jwall64.mdcfg.serializer.SerializeResult;
+import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
@@ -136,11 +139,6 @@ public class JWTCheck implements ConnectionCheck {
     );
 
     public static class Type implements ConnectionCheckType<JWTCheck> {
-
-        @Override
-        public TypeReference<JWTCheck> type() {
-            return new TypeReference<JWTCheck>() {};
-        }
 
         @Override
         public Serializer<JWTCheck> serializer() {

@@ -1,7 +1,10 @@
 package dev.jwall64.mdproxy.packet.config;
 
 import io.netty.buffer.ByteBuf;
-import dev.jwall64.mdproxy.packet.*;
+import dev.jwall64.mdproxy.packet.Packet;
+import dev.jwall64.mdproxy.packet.PacketType;
+import dev.jwall64.mdproxy.packet.ProtocolPhase;
+import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 
 public class ServerboundFinishConfigurationPacket implements Packet<ServerboundPacketHandler> {
 

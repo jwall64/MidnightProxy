@@ -1,16 +1,12 @@
 package dev.jwall64.mdproxy.whitelist;
 
 import org.jetbrains.annotations.NotNull;
-import dev.jwall64.mdcfg.TypeReference;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
-import dev.jwall64.mdcfg.serializer.SerializeContext;
-import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
 import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.requirement.CheckType;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -59,11 +55,6 @@ public class WhitelistCheck implements ConnectionCheck {
     );
 
     public static class Type implements ConnectionCheckType<WhitelistCheck> {
-
-        @Override
-        public TypeReference<WhitelistCheck> type() {
-            return new TypeReference<>() {};
-        }
 
         @Override
         public Serializer<WhitelistCheck> serializer() {
