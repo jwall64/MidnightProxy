@@ -5,11 +5,11 @@ import dev.jwall64.mdcfg.codec.FileCodecRegistry;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.midnightlib.event.HandlerList;
-import dev.jwall64.midnightlib.registry.Registry;
+import dev.jwall64.mdcfg.registry.Registry;
 import dev.jwall64.pseudonym.ParameterTransformer;
+import dev.jwall64.pseudonym.PartialMessage;
 import dev.jwall64.pseudonym.Placeholder;
 import dev.jwall64.pseudonym.PlaceholderManager;
-import dev.jwall64.pseudonym.UnresolvedMessage;
 
 import java.time.Instant;
 import java.time.ZoneId;
@@ -216,14 +216,14 @@ public interface Proxy {
         manager.register(Placeholder.of("proxy_player_limit", String.class, ctx -> ctx.context().getFirst(Proxy.class).map(Proxy::getPlayerLimit).map(Objects::toString)));
 
         manager.register(Placeholder.of("system_time", String.class, ctx -> {
-            String format = UnresolvedMessage.resolve(ctx.param(), ctx.context());
+            String format = PartialMessage.resolve(ctx.param(), ctx.context());
             if(format.isEmpty()) format = "dd/MM/yyyy HH:mm:ss";
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
             return Optional.of(Instant.now().atZone(ZoneId.systemDefault()).format(dtf));
         }, ParameterTransformer.IDENTITY));
 
         manager.register(Placeholder.of("system_time_utc", String.class, ctx -> {
-            String format = UnresolvedMessage.resolve(ctx.param(), ctx.context());
+            String format = PartialMessage.resolve(ctx.param(), ctx.context());
             if(format.isEmpty()) format = "dd/MM/yyyy HH:mm:ss";
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern(format);
             return Optional.of(Instant.now().atZone(ZoneOffset.UTC).format(dtf));

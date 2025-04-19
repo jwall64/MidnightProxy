@@ -1,6 +1,6 @@
 package dev.jwall64.mdproxy;
 
-import dev.jwall64.midnightlib.registry.Registry;
+import dev.jwall64.mdcfg.registry.Registry;
 
 public interface Authenticator {
 

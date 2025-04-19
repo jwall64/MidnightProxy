@@ -10,9 +10,9 @@ import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
 import dev.jwall64.mdproxy.util.MessageUtil;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.pseudonym.PipelineContext;
-import dev.jwall64.pseudonym.UnresolvedMessage;
+import dev.jwall64.pseudonym.PartialMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -26,9 +26,9 @@ public class JWTCheck implements ConnectionCheck {
     private final String key;
     private final KeyType<?> keyType;
     private final List<String> outputClaims;
-    private final Map<String, UnresolvedMessage<String>> expectClaims;
+    private final Map<String, PartialMessage<String>> expectClaims;
 
-    protected JWTCheck(boolean requireAuth, Identifier cookie, boolean requireEncryption, String singleUseKey, String key, KeyType<?> keyType, Collection<String> outputClaims, Map<String, UnresolvedMessage<String>> expectClaims) {
+    protected JWTCheck(boolean requireAuth, Identifier cookie, boolean requireEncryption, String singleUseKey, String key, KeyType<?> keyType, Collection<String> outputClaims, Map<String, PartialMessage<String>> expectClaims) {
         this.cookie = cookie;
         this.requireAuth = requireAuth;
         this.requireEncryption = requireEncryption;
@@ -51,8 +51,8 @@ public class JWTCheck implements ConnectionCheck {
 
         PipelineContext pipelineContext = PipelineContext.of(ctx.getConnection());
 
-        for(Map.Entry<String, UnresolvedMessage<String>> cmp : expectClaims.entrySet()) {
-            require.put(cmp.getKey(), UnresolvedMessage.resolve(cmp.getValue(), pipelineContext));
+        for(Map.Entry<String, PartialMessage<String>> cmp : expectClaims.entrySet()) {
+            require.put(cmp.getKey(), PartialMessage.resolve(cmp.getValue(), pipelineContext));
         }
 
         KeyStore store = ctx.getProxy().getPluginManager().get(JWTPlugin.class).getKeyStore();

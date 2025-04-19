@@ -6,7 +6,7 @@ import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 
 import java.util.Collection;
 import java.util.Collections;

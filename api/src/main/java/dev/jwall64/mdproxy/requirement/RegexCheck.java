@@ -3,7 +3,7 @@ package dev.jwall64.mdproxy.requirement;
 import org.jetbrains.annotations.NotNull;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.midnightlib.requirement.CheckType;
 
 import java.util.Collection;

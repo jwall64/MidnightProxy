@@ -11,7 +11,7 @@ import dev.jwall64.mdproxy.packet.common.ServerboundResourcePackStatusPacket;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.midnightlib.event.ConcurrentHandlerList;
 import dev.jwall64.midnightlib.event.HandlerList;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.pseudonym.Placeholder;
 import dev.jwall64.pseudonym.PlaceholderManager;
 import dev.jwall64.pseudonym.text.Component;

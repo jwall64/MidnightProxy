@@ -1,8 +1,8 @@
 package dev.jwall64.mdproxy.requirement;
 
 import dev.jwall64.mdproxy.ConnectionContext;
-import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.registry.Registry;
+import dev.jwall64.mdcfg.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Registry;
 import dev.jwall64.midnightlib.requirement.Check;
 import dev.jwall64.midnightlib.requirement.CheckType;
 

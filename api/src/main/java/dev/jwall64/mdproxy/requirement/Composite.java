@@ -6,7 +6,7 @@ import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.midnightlib.math.Range;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.midnightlib.requirement.CheckType;
 import dev.jwall64.midnightlib.requirement.CompositeCheck;
 import dev.jwall64.midnightlib.requirement.Requirement;

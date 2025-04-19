@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 import dev.jwall64.mdproxy.Proxy;
 import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.mdproxy.plugin.Plugin;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 
 public class TestPlugin implements Plugin {
 

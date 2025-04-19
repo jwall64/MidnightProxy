@@ -18,9 +18,9 @@ import dev.jwall64.mdproxy.packet.login.ServerboundLoginQueryPacket;
 import dev.jwall64.mdproxy.util.MessageUtil;
 import dev.jwall64.midnightlib.event.ConcurrentHandlerList;
 import dev.jwall64.midnightlib.event.HandlerList;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.pseudonym.PipelineContext;
-import dev.jwall64.pseudonym.UnresolvedMessage;
+import dev.jwall64.pseudonym.PartialMessage;
 import dev.jwall64.pseudonym.lang.LocaleHolder;
 import dev.jwall64.pseudonym.text.Component;
 import dev.jwall64.pseudonym.text.TextUtil;
@@ -249,7 +249,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         }
     }
 
-    public void disconnect(UnresolvedMessage<String> component) {
+    public void disconnect(PartialMessage<String> component) {
         disconnect(TextUtil.COMPONENT_RESOLVER.accept(component, PipelineContext.of(this)));
     }
 

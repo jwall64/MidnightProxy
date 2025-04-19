@@ -13,7 +13,7 @@ import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.plugin.PluginManagerImpl;
 import dev.jwall64.mdproxy.util.MessageUtil;
-import dev.jwall64.pseudonym.UnresolvedMessage;
+import dev.jwall64.pseudonym.PartialMessage;
 import dev.jwall64.pseudonym.lang.LangManager;
 import dev.jwall64.pseudonym.lang.LangProvider;
 import dev.jwall64.pseudonym.lang.LangRegistry;
@@ -81,10 +81,10 @@ public class Main {
         }
 
 
-        LangRegistry<UnresolvedMessage<String>> defaults;
+        LangRegistry<PartialMessage<String>> defaults;
         try {
             ConfigSection sec = JSONCodec.loadConfig(Main.class.getClassLoader().getResourceAsStream("lang/en_us.json")).asSection();
-            Map<String, UnresolvedMessage<String>> messages = new HashMap<>();
+            Map<String, PartialMessage<String>> messages = new HashMap<>();
             for(String key : sec.getKeys()) {
                 messages.put(key, MessageUtil.PARSE_PIPELINE.accept(key));
             }
@@ -99,7 +99,7 @@ public class Main {
         }
 
         LangManager.registerPlaceholders(MessageUtil.PLACEHOLDERS);
-        LangManager<UnresolvedMessage<String>, Component> manager = new LangManager<>(Component.class, defaults, LangProvider.forDirectory(langDir, reg, MessageUtil.PARSE_PIPELINE), TextUtil.COMPONENT_RESOLVER);
+        LangManager<PartialMessage<String>, Component> manager = new LangManager<>(Component.class, defaults, LangProvider.forDirectory(langDir, reg, MessageUtil.PARSE_PIPELINE), TextUtil.COMPONENT_RESOLVER);
 
         Authenticator.REGISTRY.register(Authenticator.MOJANG_ID, MojangAuthenticator.TYPE);
 

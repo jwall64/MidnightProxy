@@ -7,7 +7,7 @@ import dev.jwall64.mdproxy.packet.Packet;
 import dev.jwall64.mdproxy.packet.PacketType;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

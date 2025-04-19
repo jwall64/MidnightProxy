@@ -17,8 +17,8 @@ import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.mdproxy.plugin.PluginManagerImpl;
 import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.midnightlib.event.HandlerList;
-import dev.jwall64.midnightlib.registry.Registry;
-import dev.jwall64.pseudonym.UnresolvedMessage;
+import dev.jwall64.mdcfg.registry.Registry;
+import dev.jwall64.pseudonym.PartialMessage;
 import dev.jwall64.pseudonym.lang.LangManager;
 import dev.jwall64.pseudonym.text.Component;
 
@@ -48,7 +48,7 @@ public class ProxyServer implements Proxy {
     private final Map<String, Authenticator> authenticators = new HashMap<>();
     private final ConnectionManager listener;
     private final ConsoleHandler console;
-    private final LangManager<UnresolvedMessage<String>, Component> langManager;
+    private final LangManager<PartialMessage<String>, Component> langManager;
     private final PluginManagerImpl pluginLoader;
     private final UsedTokenCache reconnectTokenCache;
     private final IconCacheImpl iconCache;
@@ -79,7 +79,7 @@ public class ProxyServer implements Proxy {
     private final HandlerList<Proxy> started = new HandlerList<>();
 
 
-    public ProxyServer(FileWrapper<ConfigObject> config, FileCodecRegistry registry, LangManager<UnresolvedMessage<String>, Component> langManager, PluginManagerImpl pluginLoader) {
+    public ProxyServer(FileWrapper<ConfigObject> config, FileCodecRegistry registry, LangManager<PartialMessage<String>, Component> langManager, PluginManagerImpl pluginLoader) {
 
         this.config = config;
         this.langManager = langManager;
@@ -351,7 +351,7 @@ public class ProxyServer implements Proxy {
         return backendTimeout;
     }
 
-    public LangManager<UnresolvedMessage<String>, Component> getLangManager() {
+    public LangManager<PartialMessage<String>, Component> getLangManager() {
         return langManager;
     }
 

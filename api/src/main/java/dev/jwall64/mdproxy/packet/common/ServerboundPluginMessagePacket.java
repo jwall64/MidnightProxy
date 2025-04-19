@@ -3,7 +3,7 @@ package dev.jwall64.mdproxy.packet.common;
 import io.netty.buffer.ByteBuf;
 import dev.jwall64.mdproxy.packet.*;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 
 public record ServerboundPluginMessagePacket(Identifier channel, ByteBuf data) implements Packet<ServerboundPacketHandler> {
 

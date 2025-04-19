@@ -6,21 +6,21 @@ import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.util.MessageUtil;
 import dev.jwall64.pseudonym.PipelineContext;
-import dev.jwall64.pseudonym.UnresolvedMessage;
+import dev.jwall64.pseudonym.PartialMessage;
 
-public record UnresolvedBackend(UnresolvedMessage<String> hostname, @Nullable UnresolvedMessage<String> port, @Nullable UnresolvedMessage<String> redirect, @Nullable UnresolvedMessage<String> haproxy) {
+public record UnresolvedBackend(PartialMessage<String> hostname, @Nullable PartialMessage<String> port, @Nullable PartialMessage<String> redirect, @Nullable PartialMessage<String> haproxy) {
 
 
 
     public SerializeResult<Backend> resolve(PipelineContext ctx) {
 
-        String hostname = UnresolvedMessage.resolve(this.hostname, ctx);
+        String hostname = PartialMessage.resolve(this.hostname, ctx);
         int port = 25565;
 
         try {
             if (this.port != null) {
                 try {
-                    port = Integer.parseInt(UnresolvedMessage.resolve(this.port, ctx));
+                    port = Integer.parseInt(PartialMessage.resolve(this.port, ctx));
                 } catch (NumberFormatException e) {
                     return SerializeResult.failure("Unable to resolve port! Not a number");
                 }
@@ -37,12 +37,12 @@ public record UnresolvedBackend(UnresolvedMessage<String> hostname, @Nullable Un
 
         boolean redirect = false;
         if (this.redirect != null) {
-            redirect = Boolean.parseBoolean(UnresolvedMessage.resolve(this.redirect, ctx));
+            redirect = Boolean.parseBoolean(PartialMessage.resolve(this.redirect, ctx));
         }
 
         boolean haproxy = false;
         if (this.haproxy != null) {
-            haproxy = Boolean.parseBoolean(UnresolvedMessage.resolve(this.haproxy, ctx));
+            haproxy = Boolean.parseBoolean(PartialMessage.resolve(this.haproxy, ctx));
         }
 
         return SerializeResult.success(new Backend(hostname, port, redirect, haproxy));

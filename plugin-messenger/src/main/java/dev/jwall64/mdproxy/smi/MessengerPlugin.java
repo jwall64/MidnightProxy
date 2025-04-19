@@ -6,8 +6,8 @@ import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.Proxy;
 import dev.jwall64.mdproxy.plugin.Plugin;
-import dev.jwall64.midnightlib.registry.Identifier;
-import dev.jwall64.midnightlib.registry.Registry;
+import dev.jwall64.mdcfg.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Registry;
 import dev.jwall64.smi.*;
 
 import java.io.IOException;

@@ -25,9 +25,9 @@ import dev.jwall64.mdproxy.packet.status.ServerboundPingPacket;
 import dev.jwall64.mdproxy.packet.status.ServerboundStatusPacket;
 import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
-import dev.jwall64.midnightlib.registry.Identifier;
+import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.midnightlib.types.DefaultedSingleton;
-import dev.jwall64.pseudonym.UnresolvedMessage;
+import dev.jwall64.pseudonym.PartialMessage;
 import dev.jwall64.pseudonym.text.Component;
 import dev.jwall64.pseudonym.text.Content;
 import dev.jwall64.pseudonym.text.ImmutableComponent;
@@ -493,7 +493,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
         conn.disconnect(component);
     }
 
-    private void disconnect(UnresolvedMessage<String> component) {
+    private void disconnect(PartialMessage<String> component) {
         conn.disconnect(component);
     }
 

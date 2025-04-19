@@ -9,7 +9,7 @@ import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.Proxy;
 import dev.jwall64.mdproxy.plugin.Plugin;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
-import dev.jwall64.midnightlib.registry.Registry;
+import dev.jwall64.mdcfg.registry.Registry;
 
 import java.io.IOException;
 import java.nio.file.Files;
