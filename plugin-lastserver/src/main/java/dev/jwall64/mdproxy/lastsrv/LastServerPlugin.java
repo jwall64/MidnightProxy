@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
@@ -14,8 +15,11 @@ import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
 import dev.jwall64.mdcfg.codec.JSONCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
+import dev.jwall64.mdcfg.sql.Condition;
 import dev.jwall64.mdcfg.sql.DataType;
+import dev.jwall64.mdcfg.sql.DataValue;
 import dev.jwall64.mdcfg.sql.DatabasePreset;
+import dev.jwall64.mdcfg.sql.QueryResult;
 import dev.jwall64.mdcfg.sql.SQLConnection;
 import dev.jwall64.mdproxy.BackendConnection;
 import dev.jwall64.mdproxy.DataManager;
@@ -32,7 +36,7 @@ public class LastServerPlugin implements Plugin {
                                            .with("preset", "default")
                                            .with("table_prefix", "mdp_"));
 
-    private final ConfigSection dbConfig;
+    private ConfigSection dbConfig;
 
     public LastServerPlugin() {
 
@@ -41,7 +45,7 @@ public class LastServerPlugin implements Plugin {
     }
 
     public CompletableFuture<SQLConnection> connectDatabase(Proxy proxy) {
-        SQLPlugin sql = proxy.getPluginManager().getPlugin(SQLPlugin.class);
+        SQLPlugin sql = proxy.getPluginManager().get(SQLPlugin.class);
         return sql.getRegistry().connect(dbConfig);
     }
 
@@ -61,11 +65,11 @@ public class LastServerPlugin implements Plugin {
                 ConfigContext.INSTANCE, "config", configFolder, DEFAULT_CONFIG);
         this.dbConfig = config.getRoot().asSection().getSection("db");
 
-        proxy.getPluginManager()
-            .getPlugin(SQLPlugin.class)
-            .getRegistry()
-            .connect(dbConfig)
-            .thenAccept(sql -> { Tables.init(sql); });
+        SQLPlugin plugin = proxy.getPluginManager().get(SQLPlugin.class);
+        plugin.registryCreateEvent.register(
+            this, reg -> reg.connect(dbConfig).thenAccept(sql -> {
+                Tables.init(sql);
+            }));
 
         proxy.clientDisconnectEvent().register(this, client -> {
             BackendConnection conn = client.getBackendConnection();
@@ -76,7 +80,7 @@ public class LastServerPlugin implements Plugin {
             if (id == null)
                 return;
 
-            connectDatabase(proxy.thenAccept(sql -> {
+            connectDatabase(proxy).thenAccept(sql -> {
                 UUID uid = client.uuid();
                 ByteBuffer uuidBuf = ByteBuffer.allocate(16);
                 uuidBuf.putLong(0, uid.getMostSignificantBits());
@@ -84,7 +88,7 @@ public class LastServerPlugin implements Plugin {
                 DataValue dv = DataType.BLOB.create(uuidBuf);
 
                 sql.delete(Tables.TABLE_NAME)
-                    .where(Condition.equals("uuid", dv))
+                    .where(Condition.equals("player", dv))
                     .execute();
                 sql.insert(Tables.TABLE_NAME, Tables.TABLE_SCHEMA)
                     .addRow(List.of(dv, DataType.VARCHAR.create(id)))

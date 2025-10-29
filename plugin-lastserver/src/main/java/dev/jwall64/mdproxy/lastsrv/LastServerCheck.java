@@ -1,16 +1,24 @@
 package dev.jwall64.mdproxy.lastsrv;
 
+import java.nio.ByteBuffer;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.jetbrains.annotations.NotNull;
 import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.Serializer;
+import dev.jwall64.mdcfg.sql.Condition;
+import dev.jwall64.mdcfg.sql.DataType;
+import dev.jwall64.mdcfg.sql.DataValue;
+import dev.jwall64.mdcfg.sql.QueryResult;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.DataManager;
 import dev.jwall64.mdproxy.requirement.ConnectionCheck;
 import dev.jwall64.mdproxy.requirement.ConnectionCheckType;
+import dev.jwall64.mdproxy.sql.SQLPlugin;
 
 public class LastServerCheck implements ConnectionCheck {
 
@@ -45,18 +53,18 @@ public class LastServerCheck implements ConnectionCheck {
 
         pl.connectDatabase(ctx.getProxy())
             .thenAccept(sql -> {
-                UUID uid = client.uuid();
+                UUID uid = ctx.uuid();
                 ByteBuffer uuidBuf = ByteBuffer.allocate(16);
                 uuidBuf.putLong(0, uid.getMostSignificantBits());
                 uuidBuf.putLong(8, uid.getLeastSignificantBits());
                 DataValue dv = DataType.BLOB.create(uuidBuf);
 
                 QueryResult res = sql.select(Tables.TABLE_NAME)
-                                      .where(Condition.equals("uuid", dv))
+                                      .where(Condition.equals("player", dv))
                                       .execute();
 
-                if (res.size() > 0) {
-                    String id = res.row(0).getString("server");
+                if (res.rows() > 0) {
+                    String id = res.get(0).getString("server");
                     ctx.setMetaProperty("last_server_backend", id);
                     result.set(true);
                 }
