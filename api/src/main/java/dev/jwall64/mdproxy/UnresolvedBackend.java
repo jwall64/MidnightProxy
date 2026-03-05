@@ -8,8 +8,12 @@ import dev.jwall64.mdproxy.util.MessageUtil;
 import dev.jwall64.pseudonym.PipelineContext;
 import dev.jwall64.pseudonym.PartialMessage;
 
-public record UnresolvedBackend(PartialMessage<String> hostname, @Nullable PartialMessage<String> port, @Nullable PartialMessage<String> redirect, @Nullable PartialMessage<String> haproxy) {
+public record UnresolvedBackend(PartialMessage<String> hostname, @Nullable PartialMessage<String> port, @Nullable PartialMessage<String> redirect, @Nullable PartialMessage<String> haproxy) implements BackendRef {
 
+
+    public Backend get(ConnectionContext ctx) {
+        return resolve(ctx.toPipelineContext()).getOrThrow();
+    }
 
 
     public SerializeResult<Backend> resolve(PipelineContext ctx) {

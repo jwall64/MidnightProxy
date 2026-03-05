@@ -39,12 +39,6 @@ public record StatusEntry(int priority, Integer playersOverride, Integer maxPlay
 
     public ConfigSection resolve(ConfigSection other, IconCache cache) {
 
-        GameVersion ver = GameVersion.MAX;
-        if(other.hasSection("version")) {
-            ConfigSection version = other.getSection("version");
-            ver = new GameVersion(version.getString("name"), version.getInt("protocol"));
-        }
-
         ConfigSection out = other.copy();
         if(playersOverride != null) {
             out.getOrCreateSection("players").set("online", playersOverride);

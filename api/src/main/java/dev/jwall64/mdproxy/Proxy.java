@@ -6,6 +6,7 @@ import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.midnightlib.event.HandlerList;
 import dev.jwall64.mdcfg.registry.Registry;
+import dev.jwall64.mdcfg.serializer.BackSerializer;
 import dev.jwall64.pseudonym.ParameterTransformer;
 import dev.jwall64.pseudonym.PartialMessage;
 import dev.jwall64.pseudonym.Placeholder;
@@ -208,6 +209,18 @@ public interface Proxy {
      * @return A FileCodecRegistry
      */
     FileCodecRegistry fileCodecRegistry();
+
+    /**
+     * Gets the proxy's storage provider.
+     * @return A StorageProvider
+     */
+    StorageProvider storageProvider();
+
+    /**
+     * Gets the registry for StorageProvider types.
+     * @return A Registry
+     */
+    Registry<String, BackSerializer<? extends StorageProvider>> storageProviderClasses(); 
 
 
     static void registerPlaceholders(PlaceholderManager manager) {

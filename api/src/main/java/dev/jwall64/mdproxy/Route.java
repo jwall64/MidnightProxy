@@ -3,23 +3,24 @@ package dev.jwall64.mdproxy;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.mdcfg.Either;
 import dev.jwall64.mdcfg.serializer.InlineSerializer;
 import dev.jwall64.mdcfg.serializer.ObjectSerializer;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.requirement.ConnectionRequirement;
-import dev.jwall64.mdproxy.util.MessageUtil;
 import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.mdcfg.registry.Registry;
-import dev.jwall64.pseudonym.PartialMessage;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public record Route(BackendSet backends, @Nullable ConnectionRequirement requirement, boolean kickOnFail, String kickMessage, BalanceStrategy balanceStrategy) {
+public record Route(BackendSet backends, @Nullable ConnectionRequirement requirement, boolean kickOnFail, String kickMessage, BalanceStrategy balanceStrategy, int priority) implements Comparable<Route> {
+
+    public Route(BackendSet backends, @Nullable ConnectionRequirement requirement, boolean kickOnFail, String kickMessage, BalanceStrategy balanceStrategy) {
+        this(backends, requirement, kickOnFail, kickMessage, balanceStrategy, 0);
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger("Route");
 
@@ -41,6 +42,11 @@ public record Route(BackendSet backends, @Nullable ConnectionRequirement require
     public @Nullable Backend resolveBackend(ConnectionContext ctx, Registry<String, Backend> registry) {
         if(backends == null) return null;
         return backends.next(ctx, registry, balanceStrategy);
+    }
+
+    @Override
+    public int compareTo(Route other) {
+        return Integer.compare(priority, other.priority);
     }
 
     public static final Serializer<Route> SERIALIZER = ObjectSerializer.create(
@@ -79,10 +85,10 @@ public record Route(BackendSet backends, @Nullable ConnectionRequirement require
 
     public static class BackendSet {
         private int lastUsed;
-        private final List<Either<PartialMessage<String>, UnresolvedBackend>> backends;
+        private final List<BackendRef> backends;
         private final List<AtomicInteger> connectionCounts;
 
-        private BackendSet(List<Either<PartialMessage<String>, UnresolvedBackend>> backends) {
+        private BackendSet(List<BackendRef> backends) {
             this.backends = backends;
             this.connectionCounts = backends.stream().map(e -> new AtomicInteger()).toList();
         }
@@ -113,49 +119,36 @@ public record Route(BackendSet backends, @Nullable ConnectionRequirement require
             } 
         }
 
+        @Deprecated
         public Backend next(ConnectionContext ctx, Registry<String, Backend> registry, BalanceStrategy strategy) {
+            return next(ctx, strategy);
+        }
+
+        public Backend next(ConnectionContext ctx, BalanceStrategy strategy) {
 
             if(backends.isEmpty()) {
                 LOGGER.warn("Route has no backend!");
                 return null;
             }
 
-            Backend out;
             int index = nextIndex(ctx, strategy);
-
-            Either<PartialMessage<String>, UnresolvedBackend> next = backends.get(index);
-            if(next.hasLeft()) {
-                String id = PartialMessage.resolve(next.leftOrThrow(), ctx.toPipelineContext());
-                out = registry.get(id);
-                if(out == null) {
-                    LOGGER.warn("No backend with ID {} was found!", id);
-                    return null;
-                }
-            } else {
-                SerializeResult<Backend> res = next.rightOrThrow().resolve(ctx.toPipelineContext());
-                if(!res.isComplete()) {
-                    LOGGER.warn("Unable to resolve unresolved backend!", res.getError());
-                    return null;
-                }
-                out = res.getOrThrow();
-            }
-
-            return out;
-
+            return backends.get(index).get(ctx);
         }
 
         public String toString() {
             return String.join(", ", backends.stream().map(Objects::toString).toList());
         }
 
-        public static final Serializer<BackendSet> SERIALIZER = Serializer.either(MessageUtil.PARSE_SERIALIZER, UnresolvedBackend.SERIALIZER)
-            .listOf().mapToList()
+
+        public static final Serializer<BackendSet> SERIALIZER = BackendRef.SERIALIZER.listOf().mapToList()
             .flatMap(bs -> bs.backends, BackendSet::new)
-            .or(Serializer.either(MessageUtil.PARSE_SERIALIZER, UnresolvedBackend.SERIALIZER)
-                .map(bs -> SerializeResult.failure("Cannot serialize single!"), 
-                     either -> SerializeResult.success(new BackendSet(List.of(either)))
+            .or(BackendRef.SERIALIZER
+                .map(
+                    bs -> SerializeResult.failure("Cannot serialize single!"), 
+                    ref -> SerializeResult.success(new BackendSet(List.of(ref))
                 )
-            );
+            ));
+
     }
 
 }

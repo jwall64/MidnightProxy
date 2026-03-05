@@ -7,11 +7,15 @@ import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileCodecRegistry;
 import dev.jwall64.mdcfg.codec.FileWrapper;
+import dev.jwall64.mdcfg.serializer.BackSerializer;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
+import dev.jwall64.mdcfg.serializer.SerializeContext;
+import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.ListCommand;
 import dev.jwall64.mdproxy.command.ReloadCommand;
 import dev.jwall64.mdproxy.command.StopCommand;
+import dev.jwall64.mdproxy.command.SyncCommand;
 import dev.jwall64.mdproxy.netty.ConnectionManager;
 import dev.jwall64.mdproxy.plugin.PluginManager;
 import dev.jwall64.mdproxy.plugin.PluginManagerImpl;
@@ -42,9 +46,6 @@ public class ProxyServer implements Proxy {
     private final KeyPair reconnectKeyPair;
     private final FileWrapper<ConfigObject> config;
     private final Registry<String, CommandExecutor> commands;
-    private final List<StatusEntry> statusEntries = new ArrayList<>();
-    private final List<Route> routes = new ArrayList<>();
-    private final List<AuthRoute> authRoutes = new ArrayList<>();
     private final Map<String, Authenticator> authenticators = new HashMap<>();
     private final ConnectionManager listener;
     private final ConsoleHandler console;
@@ -55,8 +56,10 @@ public class ProxyServer implements Proxy {
     private final int port;
     private final int clientTimeout;
     private final PlayerListImpl playerList;
-    private PlayerCountProvider playerCount;
     private final FileCodecRegistry fileCodecRegistry;
+
+    private Registry<String, BackSerializer<? extends StorageProvider>> storageProviderClasses;
+    private PlayerCountProvider playerCount;
 
     private final ThreadPoolExecutor authExecutor;
 
@@ -69,7 +72,7 @@ public class ProxyServer implements Proxy {
     private boolean preventProxy;
     private boolean logStatus;
     private boolean legacyPing;
-    private Registry<String, Backend> backends = Registry.createStringRegistry();
+    private StorageProvider storageProvider;
 
     // Events
     private final HandlerList<ClientConnection> connected = new HandlerList<>();
@@ -77,7 +80,6 @@ public class ProxyServer implements Proxy {
     private final HandlerList<ClientConnection> joined = new HandlerList<>();
     private final HandlerList<Proxy> shutdown = new HandlerList<>();
     private final HandlerList<Proxy> started = new HandlerList<>();
-
 
     public ProxyServer(FileWrapper<ConfigObject> config, FileCodecRegistry registry, LangManager<PartialMessage<String>, Component> langManager, PluginManagerImpl pluginLoader) {
 
@@ -109,12 +111,23 @@ public class ProxyServer implements Proxy {
         this.commands.register("stop", new StopCommand());
         this.commands.register("reload", new ReloadCommand());
         this.commands.register("list", new ListCommand());
+        this.commands.register("sync", new SyncCommand());
 
         this.listener = new ConnectionManager(this, conf.getInt("boss_threads"), conf.getInt("worker_threads"));
         this.console = new ConsoleHandler(this);
         this.authExecutor = new ThreadPoolExecutor(1, conf.getInt("auth_threads"), conf.getInt("auth_timeout_ms"), TimeUnit.MILLISECONDS, new SynchronousQueue<>());
 
+        this.storageProviderClasses = Registry.createStringRegistry();
+        this.storageProviderClasses.register("config", new BackSerializer<ConfigStorageProvider>() {
+            @Override
+            public <O> SerializeResult<ConfigStorageProvider> deserialize(SerializeContext<O> ctx, O obj) {
+                return SerializeResult.success(new ConfigStorageProvider());
+            }
+        });
+        this.storageProviderClasses.register("folder", FolderStorageProvider.SERIALIZER);
+
         this.pluginLoader.loadAll(this);
+        this.storageProviderClasses = storageProviderClasses.freeze();
 
         reload();
     }
@@ -169,30 +182,14 @@ public class ProxyServer implements Proxy {
         this.logStatus = conf.getBoolean("log_status_messages");
         this.legacyPing = conf.getBoolean("reply_to_legacy_ping");
 
-        Registry<String, Backend> backends = Registry.createStringRegistry();
+        ConfigSection storageProviderConfig = conf.getSection("storage_provider");
+        String storageProviderClass = storageProviderConfig.getString("type");
 
-        Backend.SERIALIZER.filteredMapOf(
-                (key, err) -> LOGGER.warn("Could not deserialize a Backend with id {}!", key, err)
-        ).deserialize(ConfigContext.INSTANCE, getConfig().getSection("backends"))
-                .getOrThrow()
-                .forEach(backends::register);
+        BackSerializer<? extends StorageProvider> ser = storageProviderClasses.get(storageProviderClass);
 
-        this.backends = backends.freeze();
+        this.storageProvider = ser.deserialize(ConfigContext.INSTANCE, storageProviderConfig).getOrThrow();
+        this.storageProvider.reload(this);
 
-        this.statusEntries.clear();
-        this.statusEntries.addAll(getConfig().getListFiltered("status", StatusEntry.SERIALIZER, ex -> {
-            LOGGER.warn("Unable to decode a status entry!", ex);
-        }));
-
-        this.routes.clear();
-        this.routes.addAll(getConfig().getListFiltered("routes", Route.SERIALIZER, ex -> {
-            LOGGER.warn("Unable to decode a route!", ex);
-        }));
-
-        this.authRoutes.clear();
-        this.authRoutes.addAll(getConfig().getListFiltered("auth_routes", AuthRoute.serializer(this), ex -> {
-            LOGGER.warn("Unable to decode an auth route!", ex);
-        }));
     }
 
     @Override
@@ -202,17 +199,17 @@ public class ProxyServer implements Proxy {
 
     @Override
     public Registry<String, Backend> getBackends() {
-        return backends;
+        return storageProvider.backends();
     }
 
     @Override
     public List<StatusEntry> getStatusEntries() {
-        return statusEntries;
+        return storageProvider.statusEntries();
     }
 
     @Override
     public List<Route> getRoutes() {
-        return routes;
+        return storageProvider.routes();
     }
 
     @Override
@@ -285,7 +282,7 @@ public class ProxyServer implements Proxy {
     }
 
     public List<AuthRoute> getAuthRoutes() {
-        return authRoutes;
+        return storageProvider.authRoutes();
     }
 
     public Executor getAuthExecutor() {
@@ -325,6 +322,16 @@ public class ProxyServer implements Proxy {
     @Override
     public FileCodecRegistry fileCodecRegistry() {
         return fileCodecRegistry;
+    }
+
+    @Override
+    public StorageProvider storageProvider() {
+        return storageProvider;
+    }
+
+    @Override
+    public Registry<String, BackSerializer<? extends StorageProvider>> storageProviderClasses() {
+        return storageProviderClasses;
     }
 
     public int getReconnectTimeout() {

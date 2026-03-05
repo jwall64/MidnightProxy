@@ -27,7 +27,6 @@ import dev.jwall64.mdproxy.util.CryptUtil;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.midnightlib.types.DefaultedSingleton;
-import dev.jwall64.pseudonym.PartialMessage;
 import dev.jwall64.pseudonym.text.Component;
 import dev.jwall64.pseudonym.text.Content;
 import dev.jwall64.pseudonym.text.ImmutableComponent;
@@ -77,8 +76,8 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
         this.address = address;
         this.eventExecutor = eventExecutor;
 
-        this.routes = new ArrayDeque<>(server.getRoutes());
-        this.authRoutes = new ArrayDeque<>(server.getAuthRoutes());
+        this.routes = new PriorityQueue<>(server.getRoutes());
+        this.authRoutes = new PriorityQueue<>(server.getAuthRoutes());
     }
 
     @Nullable
@@ -261,8 +260,8 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
             }
 
             Backend b;
-            String backendId = decoded.getClaimAsString("backend");
-            if (backendId == null) {
+            ConfigObject backendIdObj = decoded.getClaim("backend");
+            if (backendIdObj == null) {
                 // Check for ephemeral backend
                 String ephHost = decoded.getClaimAsString("backend_host");
                 ConfigObject ephPort = decoded.getClaim("backend_port");
@@ -280,9 +279,9 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
                         ephHaproxy.asBoolean());
 
             } else {
-                b = server.getBackends().get(backendId);
+                b = server.getBackends().get(backendIdObj.asString());
                 if (b == null) {
-                    LOGGER.warn("Unable to find requested reconnect backend {}!", backendId);
+                    LOGGER.warn("Unable to find requested reconnect backend {}!", backendIdObj.asString());
                     disconnect(server.getLangManager().getMessage("error.invalid_reconnect", conn.getLanguage(), conn));
                     return;
                 }
@@ -510,10 +509,6 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
     }
 
     private void disconnect(Component component) {
-        conn.disconnect(component);
-    }
-
-    private void disconnect(PartialMessage<String> component) {
         conn.disconnect(component);
     }
 
