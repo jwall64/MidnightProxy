@@ -1,0 +1,41 @@
+api: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: connectionrequirements.mdproxy.jwall64.dev
+spec:
+  group: mdproxy.jwall64.dev
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                type:
+                  type: string
+                config:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true
+                invert:
+                  type: boolean
+                successMeta:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  default: {}
+                failMeta:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  default: {}
+  scope: Namespaced
+  names:
+    plural: connectionrequirements
+    singular: connectionrequirement
+    kind: MinecraftConnectionRequirement
+    shortNames:
+      - mccr

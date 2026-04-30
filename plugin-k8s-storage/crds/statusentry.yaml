@@ -1,0 +1,66 @@
+api: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: statusentries.mdproxy.jwall64.dev
+spec:
+  group: mdproxy.jwall64.dev
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                priority:
+                  type: integer
+                  default: 0
+                playersOverride:
+                  type: object
+                  nullable: true
+                  properties:
+                    online:
+                      type: integer
+                      nullable: true
+                    max:
+                      type: integer
+                      nullable: true
+                    preview:
+                      type: array
+                      nullable: true
+                      items:
+                        type: object
+                        properties:
+                          name:
+                            type: string
+                          id:
+                            type: string
+                            format: uuid
+                message:
+                  type: string
+                  nullable: true
+                icon:
+                  type: string
+                  nullable: true
+                secureShat:
+                  type: boolean
+                  default: false
+                previewsShat:
+                  type: boolean
+                  default: false
+                passthrough:
+                  type: string
+                  nullable: true
+                requirement:
+                  type: string
+                  nullable: true
+  scope: Namespaced
+  names:
+    plural: statusentries
+    singular: statusentry
+    kind: MinecraftStatusEntry
+    shortNames:
+      - mcse

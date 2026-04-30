@@ -32,7 +32,8 @@ public class ResourcePackPlugin implements Plugin {
     private static final ConfigSection DEFAULT_CONFIG = new ConfigSection()
             .with("packs", new ConfigSection())
             .with("routes", new ConfigSection())
-            .with("global", new ConfigList());
+            .with("global", new ConfigList())
+            .with("remove_all", false);
 
     private static final Component DEFAULT_KICK_MESSAGE = new ImmutableComponent(
             new Content.Translate("multiplayer.requiredTexturePrompt.disconnect"), Style.EMPTY,
@@ -46,6 +47,7 @@ public class ResourcePackPlugin implements Plugin {
     private Map<UUID, Component> kickMessages;
     private Map<String, List<ResourcePackEntry>> routePacks;
     private List<ResourcePackEntry> globalPacks;
+    private boolean removeAll;
 
     private void reload() {
 
@@ -71,6 +73,8 @@ public class ResourcePackPlugin implements Plugin {
                 .deserialize(ConfigContext.INSTANCE, root.getSection("routes")).getOrThrow();
         globalPacks = packs.byIdSerializer().listOf().mapToList()
                 .deserialize(ConfigContext.INSTANCE, root.getList("global")).getOrThrow();
+
+        removeAll = root.getBoolean("remove_all");
     }
 
     @Override
@@ -118,19 +122,23 @@ public class ResourcePackPlugin implements Plugin {
                 }
 
                 List<CompletableFuture<?>> futures = new ArrayList<>();
-                futures.add(client.requestCookie(REMOVE_ID).thenAccept(data -> {
-                    if (data != null) {
-                        List<UUID> ids = Arrays.stream(new String(data).split(";"))
-                                .filter(str -> !str.isEmpty())
-                                .map(UUID::fromString)
-                                .toList();
-                        for (UUID packId : ids) {
-                            if (!packIds.contains(packId)) {
-                                ev.p2.removeResourcePack(packId);
+                if(removeAll) {
+                    client.clearResourcePacks();
+                } else {
+                    futures.add(client.requestCookie(REMOVE_ID).thenAccept(data -> {
+                        if (data != null) {
+                            List<UUID> ids = Arrays.stream(new String(data).split(";"))
+                                    .filter(str -> !str.isEmpty())
+                                    .map(UUID::fromString)
+                                    .toList();
+                            for (UUID packId : ids) {
+                                if (!packIds.contains(packId)) {
+                                    ev.p2.removeResourcePack(packId);
+                                }
                             }
                         }
-                    }
-                }));
+                    }));
+                }
                 for (ResourcePackEntry pack : packs) {
                     futures.add(ev.p2.sendResourcePack(pack.toPack()).thenAccept(pck -> onComplete(client, pck)));
                 }

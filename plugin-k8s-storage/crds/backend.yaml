@@ -1,0 +1,40 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: backends.mdproxy.jwall64.dev
+spec:
+  group: mdproxy.jwall64.dev
+  versions:
+    - name: v1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                hostname:
+                  type: string
+                port:
+                  type: integer
+                  defult: 25565
+                redirect:
+                  type: boolean
+                  default: false
+                haproxy:
+                  type: boolean
+                  default: false
+                meta:
+                  type: object
+                  additionalProperties:
+                    type: string
+                  default: {}
+  scope: Namespaced
+  names:
+    plural: mcbackends
+    singular: mcbackend
+    kind: MinecraftBackend
+    shortNames:
+      - mcb

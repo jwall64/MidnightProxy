@@ -46,3 +46,6 @@ logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "lo
 jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref="jbr-anno" }
 google-guava = { module = "com.google.guava:guava", version.ref="guava" }
 rabbitmq-client = { module = "com.rabbitmq:amqp-client", version.ref="rabbitmq" }
+
+kubernetes-client = { module = "io.kubernetes:client-java", version.ref="k8s" }
+kubernetes-client-extended = { module = "io.kubernetes:client-java-extended", version.ref="k8s" }

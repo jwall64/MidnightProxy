@@ -1,0 +1,5 @@
+{
+  "name": "k8s-storage",
+  "version": "${version}",
+  "main": "dev.jwall64.mdproxy.k8s.K8sStoragePlugin"
+}
