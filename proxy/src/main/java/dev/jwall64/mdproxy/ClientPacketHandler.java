@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.jwt.Jwt;
 import dev.jwall64.mdcfg.ConfigObject;
+import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
@@ -253,8 +254,19 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
                     disconnect(server.getLangManager().getMessage("error.invalid_reconnect", conn.getLanguage(), conn));
                     return;
                 }
+
+
+                ConfigObject ephMeta = token.payload().get("backend_meta");
+                Map<String, String> meta = new HashMap<>();
+                if (ephMeta != null && ephMeta.isSection()) {
+                    ConfigSection metaSec = ephMeta.asSection();
+                    for (String key : metaSec.getKeys()) {
+                        meta.put(key, metaSec.getString(key));
+                    }
+                }
+
                 b = new Backend(ephHost, ephPort.asNumber().intValue(), ephRedirect.asBoolean(),
-                        ephHaproxy.asBoolean());
+                        ephHaproxy.asBoolean(), meta);
 
             } else {
                 b = server.getBackends().get(backendId);
@@ -318,7 +330,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
         if (wasReconnected() || !conn.authenticated()) {
             connectToBackendNow();
         } else {
-            conn.enterConfigurationEvent().invokeAsync(new Tuples.T2<>(b, conn)).thenAccept(unused -> {
+            conn.events().enterConfiguration(b, context).thenAccept(unused -> {
                 conn.send(new ClientboundFinishConfigurationPacket());
             });
         }
@@ -326,7 +338,14 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
 
     private void connectToBackendNow() {
 
-        conn.preConnectBackendEvent().invokeAsync(new Tuples.T2<>(selectedBackend, conn)).thenAccept(unused -> {
+        if(selectedBackend == null) {
+            LOGGER.error("Attempt to connect to backend before one was selected!");
+            disconnect(server.getLangManager().getMessage("error.backend_connection_failed", conn.getLanguage(), conn));
+            return;
+        }
+        context.addMetaProperties(selectedBackend.meta());
+
+        conn.events().preConnectBackend(selectedBackend, context).thenAccept(unused -> {
 
             if (!channel.isActive()) {
                 return;
@@ -358,7 +377,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
                         setupForwarding(bconn.getChannel());
 
                         server.clientJoinBackendEvent().invoke(conn);
-                        conn.postConnectBackendEvent().invokeAsync(new Tuples.T2<>(selectedBackend, conn));
+                        conn.events().postConnectBackend(selectedBackend, context);
 
                     })
                     .exceptionally(ex -> {
@@ -372,7 +391,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
 
     private void preLogin() {
 
-        conn.preLoginEvent().invokeAsync(conn).thenAccept(unused -> startLogin());
+        conn.events().preLogin(context).thenAccept(unused -> startLogin());
     }
 
     private void startLogin() {
@@ -480,7 +499,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
             }
         }
 
-        conn.postLoginEvent().invokeAsync(conn).thenAccept(unused -> {
+        conn.events().postLogin(context).thenAccept(unused -> {
             conn.send(new ClientboundLoginFinishedPacket(profile));
         });
 

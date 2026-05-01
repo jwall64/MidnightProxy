@@ -32,6 +32,10 @@ public class ConnectionContext {
         return meta.put(key, value);
     }
 
+    public void addMetaProperties(Map<String, String> properties) {
+        meta.putAll(properties);
+    }
+
     public PipelineContext toPipelineContext() {
         PipelineContext.Builder builder = PipelineContext.builder();
         builder.add(connection);

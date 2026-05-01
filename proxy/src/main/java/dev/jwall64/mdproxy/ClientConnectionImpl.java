@@ -53,29 +53,21 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
 
     private final Map<Identifier, byte[]> cookies = new HashMap<>();
 
-    private final Map<Integer, CompletableFuture<ServerboundLoginQueryPacket>>
-        loginQueries = new HashMap<>();
-    private final
-        Map<UUID, CompletableFuture<ServerboundResourcePackStatusPacket>>
-            resourcePacks = new HashMap<>();
-    private final Map<Identifier, CompletableFuture<byte[]>> awaitedCookies =
-        new HashMap<>();
+    private final Map<Integer, CompletableFuture<ServerboundLoginQueryPacket>> loginQueries = new HashMap<>();
+    private final Map<UUID, CompletableFuture<ServerboundResourcePackStatusPacket>> resourcePacks = new HashMap<>();
+    private final Map<Identifier, CompletableFuture<byte[]>> awaitedCookies = new HashMap<>();
 
-    private final HandlerList<ServerboundPluginMessagePacket>
-        pluginMessageEvent = new HandlerList<>();
-    private final HandlerList<ServerboundLoginQueryPacket> loginQueryEvent =
-        new HandlerList<>();
+    private final HandlerList<ServerboundPluginMessagePacket> pluginMessageEvent = new HandlerList<>();
+    private final HandlerList<ServerboundLoginQueryPacket> loginQueryEvent = new HandlerList<>();
 
-    private final ConcurrentHandlerList<ClientConnection> preLoginEvent;
-    private final ConcurrentHandlerList<ClientConnection> postLoginEvent;
-    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-        enterConfigurationEvent;
-    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-        preConnectBackendEvent;
-    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-        postConnectBackendEvent;
-    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-        disconnectEvent;
+    private final ConnectionEventsImpl events;
+
+    private final ConcurrentHandlerList<ClientConnection> oldPreLoginEvent;
+    private final ConcurrentHandlerList<ClientConnection> oldPostLoginEvent;
+    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> oldEnterConfigurationEvent;
+    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> oldPreConnectBackendEvent;
+    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> oldPostConnectBackendEvent;
+    private final ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> oldDisconnectEvent;
 
     private final ServerboundHandshakePacket.Intent intent;
 
@@ -90,12 +82,21 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         this.port = port;
         this.intent = intent;
 
-        this.preLoginEvent = new ConcurrentHandlerList<>(svc);
-        this.postLoginEvent = new ConcurrentHandlerList<>(svc);
-        this.enterConfigurationEvent = new ConcurrentHandlerList<>(svc);
-        this.preConnectBackendEvent = new ConcurrentHandlerList<>(svc);
-        this.postConnectBackendEvent = new ConcurrentHandlerList<>(svc);
-        this.disconnectEvent = new ConcurrentHandlerList<>(svc);
+        this.events = new ConnectionEventsImpl(svc);
+
+        this.oldPreLoginEvent = new ConcurrentHandlerList<>(svc);
+        this.oldPostLoginEvent = new ConcurrentHandlerList<>(svc);
+        this.oldEnterConfigurationEvent = new ConcurrentHandlerList<>(svc);
+        this.oldPreConnectBackendEvent = new ConcurrentHandlerList<>(svc);
+        this.oldPostConnectBackendEvent = new ConcurrentHandlerList<>(svc);
+        this.oldDisconnectEvent = new ConcurrentHandlerList<>(svc);
+
+        this.events.preLogin().register(this, ev -> oldPreLoginEvent.invoke(ev.connection()));
+        this.events.postLogin().register(this, ev -> oldPostLoginEvent.invoke(ev.connection()));
+        this.events.enterConfiguration().register(this, ev -> oldEnterConfigurationEvent.invoke(new Tuples.T2<>(ev.backend(), ev.connection())));
+        this.events.preConnectBackend().register(this, ev -> oldPreConnectBackendEvent.invoke(new Tuples.T2<>(ev.backend(), ev.connection())));
+        this.events.postConnectBackend().register(this, ev -> oldPostConnectBackendEvent.invoke(new Tuples.T2<>(ev.backend(), ev.connection())));
+        this.events.disconnect().register(this, ev -> oldDisconnectEvent.invoke(new Tuples.T2<>(ev.backend(), ev.connection())));
 
         loginQueryEvent.register(this, this::loginQueryReceived);
     }
@@ -496,37 +497,44 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
     }
 
     @Override
+    public ConnectionEventsImpl events() {
+        return events;
+    }
+
+    @Override
+    @Deprecated
     public ConcurrentHandlerList<ClientConnection> preLoginEvent() {
-        return preLoginEvent;
+        return oldPreLoginEvent;
     }
 
     @Override
+    @Deprecated
     public ConcurrentHandlerList<ClientConnection> postLoginEvent() {
-        return postLoginEvent;
+        return oldPostLoginEvent;
     }
 
     @Override
-    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-    enterConfigurationEvent() {
-        return enterConfigurationEvent;
+    @Deprecated
+    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> enterConfigurationEvent() {
+        return oldEnterConfigurationEvent;
     }
 
     @Override
-    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-    preConnectBackendEvent() {
-        return preConnectBackendEvent;
+    @Deprecated
+    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> preConnectBackendEvent() {
+        return oldPreConnectBackendEvent;
     }
 
     @Override
-    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-    postConnectBackendEvent() {
-        return postConnectBackendEvent;
+    @Deprecated
+    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> postConnectBackendEvent() {
+        return oldPostConnectBackendEvent;
     }
 
     @Override
-    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>>
-    disconnectEvent() {
-        return disconnectEvent;
+    @Deprecated
+    public ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> disconnectEvent() {
+        return oldDisconnectEvent;
     }
 
     public Channel getChannel() { return channel; }

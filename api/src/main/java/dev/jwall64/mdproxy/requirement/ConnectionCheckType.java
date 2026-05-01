@@ -23,6 +23,7 @@ public interface ConnectionCheckType<T extends Check<ConnectionContext>> extends
     CheckType<ConnectionContext, ConnectionString> UUID = register("uuid", new ConnectionString.Type(ConnectionContext::uuidString, true));
     CheckType<ConnectionContext, ConnectionString> LOCALE = register("locale", new ConnectionString.Type(ConnectionContext::locale, true));
     CheckType<ConnectionContext, CookieCheck> COOKIE = register("cookie", CookieCheck.TYPE);
+    CheckType<ConnectionContext, MetaCheck> META = register("meta", MetaCheck.TYPE);
 
     CheckType<ConnectionContext, RegexCheck> HOSTNAME_REGEX = register("hostname_regex", new RegexCheck.Type(ConnectionContext::hostname, false));
     CheckType<ConnectionContext, RegexCheck> ADDRESS_REGEX = register("ip_address_regex", new RegexCheck.Type(ConnectionContext::addressString, false));

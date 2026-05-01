@@ -232,12 +232,27 @@ public interface ClientConnection {
     ServerboundHandshakePacket.Intent getIntent();
 
     // Events
+    ConnectionEvents events();
+
+    @Deprecated
     ConcurrentHandlerList<ClientConnection> preLoginEvent();
+
+    @Deprecated
     ConcurrentHandlerList<ClientConnection> postLoginEvent();
+
+    @Deprecated
     ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> enterConfigurationEvent();
+
+    @Deprecated
     ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> preConnectBackendEvent();
+
+    @Deprecated
     ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> postConnectBackendEvent();
+    
+    @Deprecated
     ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> disconnectEvent();
+
+
 
     static void registerPlaceholders(PlaceholderManager manager) {
 

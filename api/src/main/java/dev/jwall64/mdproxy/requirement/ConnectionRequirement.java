@@ -11,15 +11,24 @@ import dev.jwall64.midnightlib.requirement.Requirement;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 public class ConnectionRequirement extends Requirement<ConnectionContext> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("ConnectionRequirement");
 
+    private final Map<String, String> successMeta;
+    private final Map<String, String> failMeta;
+
     public ConnectionRequirement(Check<ConnectionContext> check, boolean invert) {
-        super(check, invert);
+        this(check, invert, Collections.emptyMap(), Collections.emptyMap());
     }
 
+    public ConnectionRequirement(Check<ConnectionContext> check, boolean invert, Map<String, String> successMeta, Map<String, String> failMeta) {
+        super(check, invert);
+        this.successMeta = successMeta;
+        this.failMeta = failMeta;
+    }
 
     public boolean requiresAuth() {
         return check instanceof ConnectionCheck cc && cc.requiresAuth();
@@ -40,7 +49,13 @@ public class ConnectionRequirement extends Requirement<ConnectionContext> {
         }
 
         try {
-            return check(conn) ? TestResult.PASS : TestResult.FAIL;
+            if(check(conn)) {
+                conn.addMetaProperties(successMeta);
+                return TestResult.PASS;
+            } else { 
+                conn.addMetaProperties(failMeta);
+                return TestResult.FAIL;
+            }
         } catch (Throwable ex) {
             LOGGER.error("An error occurred while checking a requirement!", ex);
             return TestResult.FAIL;
