@@ -8,7 +8,7 @@ Utils.setupResources(project, rootProject, "plugin.json")
 
 dependencies {
     compileOnly(libs.jetbrains.annotations)
-    compileOnly(project(":api"))
+    implementation(project(":api"))
 }
 
 val copyOutputTask = tasks.register<Copy>("copyOutputFiles") {
@@ -16,7 +16,7 @@ val copyOutputTask = tasks.register<Copy>("copyOutputFiles") {
     dependsOn(tasks.jar)
     from(tasks.jar.get().archiveFile)
 
-    val output = rootDir.resolve("build").resolve("plugins")
+    val output = rootDir.resolve("proxy").resolve("run").resolve("plugins") //rootDir.resolve("build").resolve("plugins")
 
     into(output)
 }

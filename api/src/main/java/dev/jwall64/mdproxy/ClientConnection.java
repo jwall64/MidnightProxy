@@ -253,6 +253,11 @@ public interface ClientConnection {
     ConcurrentHandlerList<Tuples.T2<Backend, ClientConnection>> disconnectEvent();
 
 
+    public boolean playPhaseRequired();
+
+    public void markPlayPhaseRequired();
+
+
 
     static void registerPlaceholders(PlaceholderManager manager) {
 

@@ -1,6 +1,5 @@
 package dev.jwall64.mdproxy.resources;
 
-import com.google.common.collect.Streams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import dev.jwall64.mdcfg.ConfigList;
@@ -25,8 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 public class ResourcePackPlugin implements Plugin {
 

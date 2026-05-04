@@ -5,6 +5,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufOutputStream;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+
+import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.codec.EncodeException;
 import dev.jwall64.mdcfg.codec.NBTCodec;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
@@ -163,6 +165,14 @@ public class PacketBufferUtil {
             new NBTCodec(false).encode(new ProtocolContext<>(ConfigContext.INSTANCE, GameVersion.MAX.protocolVersion()), Component.SERIALIZER, component, bos);
         } catch (IOException | EncodeException ex) {
             throw new EncoderException("Unable to encode NBT component!", ex);
+        }
+    }
+
+    public static void writeNBT(ByteBuf buf, ConfigObject obj) {
+        try(ByteBufOutputStream bos = new ByteBufOutputStream(buf)) {
+            new NBTCodec(false).encode(new ProtocolContext<>(ConfigContext.INSTANCE, GameVersion.MAX.protocolVersion()), obj, bos);
+        } catch (IOException | EncodeException ex) {
+            throw new EncoderException("Unable to encode NBT!", ex);
         }
     }
 

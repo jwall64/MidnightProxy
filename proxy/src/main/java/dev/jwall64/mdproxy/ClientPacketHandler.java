@@ -1,5 +1,6 @@
 package dev.jwall64.mdproxy;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.primitives.Ints;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
@@ -9,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import dev.jwall64.jwt.Jwt;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
-import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.netty.*;
@@ -19,7 +19,10 @@ import dev.jwall64.mdproxy.packet.ServerboundHandshakePacket;
 import dev.jwall64.mdproxy.packet.ServerboundPacketHandler;
 import dev.jwall64.mdproxy.packet.common.*;
 import dev.jwall64.mdproxy.packet.config.ClientboundFinishConfigurationPacket;
+import dev.jwall64.mdproxy.packet.config.ClientboundRegistryDataPacket;
+import dev.jwall64.mdproxy.packet.config.ClientboundUpdateTagsPacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundFinishConfigurationPacket;
+import dev.jwall64.mdproxy.packet.config.ServerboundKnownPacksPacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundSettingsPacket;
 import dev.jwall64.mdproxy.packet.login.*;
 import dev.jwall64.mdproxy.packet.status.ServerboundPingPacket;
@@ -44,6 +47,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class ClientPacketHandler implements ServerboundPacketHandler {
+
 
     private static final Component IGNORE_STATUS_REASON = new ImmutableComponent(
             new Content.Translate("disconnect.ignoring_status_request"), Style.EMPTY, Collections.emptyList());
@@ -206,6 +210,10 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
         }
     }
 
+    public void handle(ServerboundKnownPacksPacket knownPacks) {
+        // Ignore
+    }
+
     @Override
     public void handle(ServerboundLoginFinishedPacket finished) {
 
@@ -319,6 +327,31 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
         channel.close();
     }
 
+    private void finishConfiguration() {
+
+        if (conn.hasDisconnected()) {
+            LOGGER.warn("Attempt to finish configuration for disconnected player");
+            return;
+        }
+
+        if(conn.playPhaseRequired()) {
+
+            // As of 26.1, clients will disconnect if they don't receive certain registry data before the finish configuration packet. 
+            if(conn.protocolVersion() > 774) {
+                // Send required registries
+             
+                for(RegistryData data : DynamicRegistries.REQUIRED_REGISTRIES) {
+                    conn.send(new ClientboundRegistryDataPacket(data));
+                }
+                conn.send(new ClientboundUpdateTagsPacket(ImmutableMap.copyOf(DynamicRegistries.REQUIRED_TAGS)));
+            }
+
+            conn.send(new ClientboundFinishConfigurationPacket());
+        } else {
+            connectToBackendNow();
+        }
+    }
+
     private void connectToBackend(Backend b) {
 
         if (conn.hasDisconnected()) {
@@ -331,7 +364,7 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
             connectToBackendNow();
         } else {
             conn.events().enterConfiguration(b, context).thenAccept(unused -> {
-                conn.send(new ClientboundFinishConfigurationPacket());
+                finishConfiguration();
             });
         }
     }

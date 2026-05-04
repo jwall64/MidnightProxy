@@ -4,6 +4,10 @@ import io.netty.buffer.ByteBuf;
 import dev.jwall64.mdproxy.GameVersion;
 import dev.jwall64.mdproxy.packet.common.*;
 import dev.jwall64.mdproxy.packet.config.ClientboundFinishConfigurationPacket;
+import dev.jwall64.mdproxy.packet.config.ClientboundKnownPacksPacket;
+import dev.jwall64.mdproxy.packet.config.ClientboundRegistryDataPacket;
+import dev.jwall64.mdproxy.packet.config.ClientboundUpdateTagsPacket;
+import dev.jwall64.mdproxy.packet.config.ServerboundKnownPacksPacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundFinishConfigurationPacket;
 import dev.jwall64.mdproxy.packet.config.ServerboundSettingsPacket;
 import dev.jwall64.mdproxy.packet.login.*;
@@ -73,17 +77,70 @@ public class PacketRegistry<T> {
 
     public static final PacketRegistry<ServerboundPacketHandler> HANDSHAKE = new PacketRegistry<>(GameVersion.MAX.protocolVersion(), ProtocolPhase.HANDSHAKE, PacketFlow.SERVERBOUND, List.of(ServerboundHandshakePacket.TYPE));
 
-    private static final List<PacketType<ClientboundPacketHandler>> STATUS_CLIENTBOUND = List.of(ClientboundStatusPacket.TYPE, ClientboundPingPacket.TYPE);
-    private static final List<PacketType<ServerboundPacketHandler>> STATUS_SERVERBOUND = List.of(ServerboundStatusPacket.TYPE, ServerboundPingPacket.TYPE);
+    private static final List<PacketType<ClientboundPacketHandler>> STATUS_CLIENTBOUND = List.of(
+        ClientboundStatusPacket.TYPE, 
+        ClientboundPingPacket.TYPE
+    );
 
-    private static final List<PacketType<ClientboundPacketHandler>> LOGIN_CLIENTBOUND = List.of(ClientboundKickPacket.TYPE, ClientboundEncryptionPacket.TYPE, ClientboundLoginFinishedPacket.TYPE, ClientboundLoginQueryPacket.TYPE, ClientboundCookieRequestPacket.TYPE);
-    private static final List<PacketType<ServerboundPacketHandler>> LOGIN_SERVERBOUND = List.of(ServerboundLoginPacket.TYPE, ServerboundEncryptionPacket.TYPE, ServerboundLoginQueryPacket.TYPE, ServerboundLoginFinishedPacket.TYPE, ServerboundCookiePacket.TYPE);
+    private static final List<PacketType<ServerboundPacketHandler>> STATUS_SERVERBOUND = List.of(
+        ServerboundStatusPacket.TYPE, 
+        ServerboundPingPacket.TYPE
+    );
 
-    private static final List<PacketType<ClientboundPacketHandler>> CONFIG_CLIENTBOUND = List.of(ClientboundCookieRequestPacket.TYPE, ClientboundPluginMessagePacket.TYPE, ClientboundKickPacket.TYPE, ClientboundFinishConfigurationPacket.TYPE, ClientboundTransferPacket.TYPE,  ClientboundSetCookiePacket.TYPE, ClientboundAddResourcePackPacket.TYPE, ClientboundRemoveResourcePackPacket.TYPE);
-    private static final List<PacketType<ServerboundPacketHandler>> CONFIG_SERVERBOUND = List.of(ServerboundSettingsPacket.TYPE, ServerboundCookiePacket.TYPE, ServerboundPluginMessagePacket.TYPE,  ServerboundFinishConfigurationPacket.TYPE, ServerboundResourcePackStatusPacket.TYPE);
+    private static final List<PacketType<ClientboundPacketHandler>> LOGIN_CLIENTBOUND = List.of(
+        ClientboundKickPacket.TYPE, 
+        ClientboundEncryptionPacket.TYPE, 
+        ClientboundLoginFinishedPacket.TYPE, 
+        ClientboundLoginQueryPacket.TYPE, 
+        ClientboundCookieRequestPacket.TYPE
+    );
 
-    private static final List<PacketType<ClientboundPacketHandler>> PLAY_CLIENTBOUND = List.of(ClientboundCookieRequestPacket.TYPE, ClientboundTransferPacket.TYPE, ClientboundKickPacket.TYPE, ClientboundPluginMessagePacket.TYPE, ClientboundSetCookiePacket.TYPE, ClientboundAddResourcePackPacket.TYPE, ClientboundRemoveResourcePackPacket.TYPE);
-    private static final List<PacketType<ServerboundPacketHandler>> PLAY_SERVERBOUND = List.of(ServerboundCookiePacket.TYPE, ServerboundPluginMessagePacket.TYPE, ServerboundResourcePackStatusPacket.TYPE);
+    private static final List<PacketType<ServerboundPacketHandler>> LOGIN_SERVERBOUND = List.of(
+        ServerboundLoginPacket.TYPE, 
+        ServerboundEncryptionPacket.TYPE, 
+        ServerboundLoginQueryPacket.TYPE, 
+        ServerboundLoginFinishedPacket.TYPE, 
+        ServerboundCookiePacket.TYPE
+    );
+
+    private static final List<PacketType<ClientboundPacketHandler>> CONFIG_CLIENTBOUND = List.of(
+        ClientboundCookieRequestPacket.TYPE, 
+        ClientboundPluginMessagePacket.TYPE,
+        ClientboundKickPacket.TYPE, 
+        ClientboundFinishConfigurationPacket.TYPE,
+        ClientboundTransferPacket.TYPE, 
+        ClientboundSetCookiePacket.TYPE, 
+        ClientboundAddResourcePackPacket.TYPE, 
+        ClientboundRemoveResourcePackPacket.TYPE,
+        ClientboundUpdateTagsPacket.TYPE,
+        ClientboundRegistryDataPacket.TYPE,
+        ClientboundKnownPacksPacket.TYPE
+    );
+
+    private static final List<PacketType<ServerboundPacketHandler>> CONFIG_SERVERBOUND = List.of(
+        ServerboundSettingsPacket.TYPE, 
+        ServerboundCookiePacket.TYPE, 
+        ServerboundPluginMessagePacket.TYPE, 
+        ServerboundFinishConfigurationPacket.TYPE, 
+        ServerboundResourcePackStatusPacket.TYPE,
+        ServerboundKnownPacksPacket.TYPE
+    );
+
+    private static final List<PacketType<ClientboundPacketHandler>> PLAY_CLIENTBOUND = List.of(
+        ClientboundCookieRequestPacket.TYPE, 
+        ClientboundTransferPacket.TYPE, 
+        ClientboundKickPacket.TYPE, 
+        ClientboundPluginMessagePacket.TYPE, 
+        ClientboundSetCookiePacket.TYPE, 
+        ClientboundAddResourcePackPacket.TYPE, 
+        ClientboundRemoveResourcePackPacket.TYPE
+    );
+
+    private static final List<PacketType<ServerboundPacketHandler>> PLAY_SERVERBOUND = List.of(
+        ServerboundCookiePacket.TYPE, 
+        ServerboundPluginMessagePacket.TYPE, 
+        ServerboundResourcePackStatusPacket.TYPE
+    );
 
     public static PacketRegistry<ServerboundPacketHandler> getServerbound(int version, ProtocolPhase phase) {
 

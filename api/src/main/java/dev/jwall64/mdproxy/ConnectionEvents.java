@@ -12,37 +12,37 @@ public interface ConnectionEvents {
     HandlerList<Disconnect> disconnect();
 
     public record PreLogin(ConnectionContext context) {
-        ClientConnection connection() {
+        public ClientConnection connection() {
             return context.getConnection();
         }
     }
 
     public record PostLogin(ConnectionContext context) {
-        ClientConnection connection() {
+        public ClientConnection connection() {
             return context.getConnection();
         }
     }
 
     public record EnterConfiguration(Backend backend, ConnectionContext context) {
-        ClientConnection connection() {
+        public ClientConnection connection() {
             return context.getConnection();
         }
     }
 
     public record PreConnectBackend(Backend backend, ConnectionContext context) {
-        ClientConnection connection() {
+        public ClientConnection connection() {
             return context.getConnection();
         }
     }
 
     public record PostConnectBackend(Backend backend, ConnectionContext context) {
-        ClientConnection connection() {
+        public ClientConnection connection() {
             return context.getConnection();
         }
     }
 
     public record Disconnect(Backend backend, ConnectionContext context) {
-        ClientConnection connection() {
+        public ClientConnection connection() {
             return context.getConnection();
         }
     }

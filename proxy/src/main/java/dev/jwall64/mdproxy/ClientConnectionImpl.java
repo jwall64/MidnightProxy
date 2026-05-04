@@ -51,6 +51,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
     ProtocolPhase phase = ProtocolPhase.HANDSHAKE;
     boolean wasReconnected = false;
 
+    private boolean playPhaseRequired = false;
     private final Map<Identifier, byte[]> cookies = new HashMap<>();
 
     private final Map<Integer, CompletableFuture<ServerboundLoginQueryPacket>> loginQueries = new HashMap<>();
@@ -408,8 +409,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
     }
 
     @Override
-    public CompletableFuture<ServerboundResourcePackStatusPacket>
-    sendResourcePack(ResourcePack pack) {
+    public CompletableFuture<ServerboundResourcePackStatusPacket> sendResourcePack(ResourcePack pack) {
 
         if(pack == null) return CompletableFuture.failedFuture(new IllegalArgumentException("Cannot send a null resource pack!"));
 
@@ -433,6 +433,7 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         resourcePacks.put(pack.uuid(), out);
 
         send(pack.toPacket());
+        markPlayPhaseRequired(); // If the client is transferred while in the configuration phase, they will drop all resource packs
 
         return out;
     }
@@ -556,4 +557,16 @@ public class ClientConnectionImpl implements ClientConnection, LocaleHolder {
         }
         return null;
     }
+
+
+    @Override
+    public boolean playPhaseRequired() {
+        return playPhaseRequired;
+    }
+
+    @Override
+    public void markPlayPhaseRequired() {
+        this.playPhaseRequired = true;
+    }
+
 }
