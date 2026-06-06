@@ -1,6 +1,6 @@
 [versions]
 junit = "5.11.0"
-netty = "4.1.115.Final"
+netty = "4.2.15.Final"
 mdcfg = "3.5.3"
 mdlib = "2.2.0"
 smi = "0.3.2"
