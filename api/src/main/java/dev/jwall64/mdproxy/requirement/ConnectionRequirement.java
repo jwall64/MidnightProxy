@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.ConnectionContext;
 import dev.jwall64.mdproxy.TestResult;
+import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.midnightlib.requirement.Check;
 import dev.jwall64.midnightlib.requirement.Requirement;
@@ -62,6 +63,14 @@ public class ConnectionRequirement extends Requirement<ConnectionContext> {
         }
     }
 
-    public static final Serializer<ConnectionRequirement> SERIALIZER = Requirement.serializer(ConnectionCheckType.REGISTRY, ConnectionRequirement::new);
+    public static final Serializer<ConnectionRequirement> SERIALIZER = 
+        Requirement.serializer(ConnectionCheckType.REGISTRY, ConnectionRequirement::new).and(
+            Serializer.STRING.mapOf().fieldOf("success_meta").and(Serializer.STRING.mapOf().fieldOf("fail_meta"))
+        ).flatMap(req -> {
+            return new Tuples.T2<>(req, new Tuples.T2<>(req.successMeta, req.failMeta));
+        }, t2 -> {
+            ConnectionRequirement req = t2.p1;
+            return new ConnectionRequirement(req.check, req.invert, t2.p2.p1, t2.p2.p2);
+        });
 
 }
