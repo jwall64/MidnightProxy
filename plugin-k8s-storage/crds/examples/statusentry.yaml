@@ -1,0 +1,6 @@
+apiVersion: mdproxy.jwall64.dev/v1
+kind: MinecraftStatusEntry
+metadata:
+  name: example
+spec:
+  message: "&aHello, Kubernetes"

@@ -1,7 +1,7 @@
 [versions]
 junit = "5.11.0"
 netty = "4.2.15.Final"
-mdcfg = "3.5.3"
+mdcfg = "3.5.4"
 mdlib = "2.2.0"
 smi = "0.3.2"
 slf4j = "2.0.11"
@@ -11,6 +11,7 @@ guava = "33.3.0-jre"
 rabbitmq = "5.21.0"
 pseudonym = "0.4.5-SNAPSHOT"
 jwtutil = "0.2.0-SNAPSHOT"
+k8s = "26.0.0"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
@@ -27,6 +28,7 @@ netty-transport-kqueue = { module = "io.netty:netty-transport-native-kqueue", ve
 midnight-cfg = { module = "dev.jwall64:midnightcfg-api", version.ref="mdcfg" }
 midnight-cfg-sql = { module = "dev.jwall64:midnightcfg-api-sql", version.ref="mdcfg" }
 midnight-cfg-json = { module = "dev.jwall64:midnightcfg-codec-json", version.ref="mdcfg" }
+midnight-cfg-gson = { module = "dev.jwall64:midnightcfg-codec-gson", version.ref="mdcfg" }
 midnight-cfg-nbt = { module = "dev.jwall64:midnightcfg-codec-nbt", version.ref="mdcfg" }
 midnight-lib = { module = "dev.jwall64:midnightlib", version.ref="mdlib" }
 

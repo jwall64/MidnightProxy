@@ -1,7 +1,7 @@
-api: apiextensions.k8s.io/v1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  name: routes.mdproxy.jwall64.dev
+  name: mcroutes.mdproxy.jwall64.dev
 spec:
   group: mdproxy.jwall64.dev
   versions:
@@ -12,47 +12,48 @@ spec:
         openAPIV3Schema:
           type: object
           properties:
-            backends:
-              type: array
-              items:
-                type: object
-                properties:
-                  name:
-                    oneOf:
-                      - type: string
-                      - type: object
-                        properties:
-                          hostname:
-                            type: string
-                          port:
-                            type: integer
-                            default: 25565
-                          redirect:
-                            type: boolean
-                            default: false
-                          haproxy:
-                            type: boolean
-                            default: false
-            requirement:
-              type: string
-              nullable: true
-            kickOnFail:
-              type: boolean
-              default: false
-            kickMessage:
-              type: string
-              nullable: true
-            balanceStrategy:
-              type: string
-              enum: ["round_robin", "min_connections"]
-              default: "round_robin"
-            priority:
-              type: integer
-              default: 0
+            spec:
+              type: object
+              required: ["backend"]
+              properties:
+                backend:
+                  x-kubernetes-preserve-unknown-fields: true
+                requirement:
+                  type: object
+                  nullable: true
+                  x-kubernetes-preserve-unknown-fields: true
+                  properties:
+                    type:
+                      type: string
+                    invert:
+                      type: boolean
+                    success_meta:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      default: {}
+                    fail_meta:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      default: {}
+                kick_on_fail:
+                  type: boolean
+                  default: false
+                kick_message:
+                  type: string
+                  nullable: true
+                balance_strategy:
+                  type: string
+                  enum: ["round_robin", "min_connections"]
+                  default: "round_robin"
+                priority:
+                  type: integer
+                  default: 0
   scope: Namespaced
   names:
-    plural: routes
-    singular: route
+    plural: mcroutes
+    singular: mcroute
     kind: MinecraftRoute
     shortNames:
       - mcrt

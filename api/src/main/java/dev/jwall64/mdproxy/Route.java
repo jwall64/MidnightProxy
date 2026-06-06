@@ -88,7 +88,7 @@ public record Route(BackendSet backends, @Nullable ConnectionRequirement require
         private final List<BackendRef> backends;
         private final List<AtomicInteger> connectionCounts;
 
-        private BackendSet(List<BackendRef> backends) {
+        public BackendSet(List<BackendRef> backends) {
             this.backends = backends;
             this.connectionCounts = backends.stream().map(e -> new AtomicInteger()).toList();
         }

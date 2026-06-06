@@ -1,0 +1,7 @@
+apiVersion: mdproxy.jwall64.dev/v1
+kind: MinecraftRoute
+metadata:
+  name: example
+spec:
+  backend:
+    - "example"

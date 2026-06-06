@@ -1,0 +1,11 @@
+apiVersion: mdproxy.jwall64.dev/v1
+kind: MinecraftBackend
+metadata:
+  name: example
+spec:
+  hostname: "my-minecraft-svc-address"
+  port: 25565
+  redirect: false
+  haproxy: false
+  meta:
+    example: "hello"

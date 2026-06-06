@@ -1,0 +1,6 @@
+apiVersion: mdproxy.jwall64.dev/v1
+kind: MinecraftAuthRoute
+metadata:
+  name: example
+spec:
+  type: mojang

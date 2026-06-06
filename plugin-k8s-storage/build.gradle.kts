@@ -9,11 +9,13 @@ Utils.setupResources(project, rootProject, "plugin.json")
 
 dependencies {
     compileOnly(libs.jetbrains.annotations)
-    compileOnly(project(":api"))
+    implementation(project(":api"))
 
+    implementation(libs.midnight.cfg.gson)
     implementation(libs.kubernetes.client)
     implementation(libs.kubernetes.client.extended)
 
+    shadow(libs.midnight.cfg.gson)
     shadow(libs.kubernetes.client)
     shadow(libs.kubernetes.client.extended)
 }

@@ -213,7 +213,7 @@ public interface Proxy {
     /**
      * Gets the proxy's storage provider.
      * @return A StorageProvider
-     */
+     */ 
     StorageProvider storageProvider();
 
     /**

@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: midnightproxy
+  labels:
+    app: midnightproxy
+spec:
+  selector:
+    matchLabels:
+      app: midnightproxy
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: midnightproxy
+    spec:
+      serviceAccountName: midnightproxy-sa
+      containers:
+        - name: midnightproxy
+          image: midnightproxy:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 25565
+              name: minecraft
+              protocol: TCP
+          volumeMounts:
+            - name: config
+              mountPath: /data/config.json
+              subPath: config.json
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: midnightproxy-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: midnightproxy-config
+data:
+  config.json: |
+    {
+      "port": 25565,
+      "storage_provider": { 
+        "type": "k8s",
+        "namespace": "default"
+      }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: midnightproxy
+  name: midnightproxy
+spec:
+  clusterIP: None
+  ports:
+    - name: minecraft
+      port: 25565
+      targetPort: 25565
+      protocol: TCP
+  selector:
+    service: midnightproxy
