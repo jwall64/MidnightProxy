@@ -6,7 +6,7 @@ import io.netty.channel.ChannelFutureListener;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.jwt.*;
+import dev.jwall64.jwt.Jwt;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.Tuples;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
@@ -229,44 +229,22 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
             }
 
             String jwt = new String(cookie.data(), StandardCharsets.US_ASCII);
-            SerializeResult<JWT> jwtRes = JWTReader.readAny(jwt,
-                    KeySupplier.of(server.getReconnectKeyPair().getPrivate(), KeyType.RSA_PRIVATE));
-            if (!jwtRes.isComplete()) {
+            Jwt token = server.validateReconnect(jwt);
 
-                LOGGER.warn("Unable to parse reconnect cookie!", jwtRes.getError());
-                disconnect(server.getLangManager().getMessage("error.invalid_reconnect", conn.getLanguage(), conn));
-                return;
-            }
-
-            JWT decoded = jwtRes.getOrThrow();
-            if (decoded.isExpired() || !server.getTokenCache().validate(decoded)) {
-                preLogin();
-                return;
-            }
-
-            // Verify claims
-            JWTVerifier verifier = new JWTVerifier()
-                    .requireEncrypted()
-                    .withClaim("hostname", conn.hostname())
-                    .withClaim("port", conn.port())
-                    .withClaim("username", profile.username())
-                    .withClaim("uuid", profile.uuid().toString())
-                    .withClaim("protocol", conn.protocolVersion());
-
-            if (!verifier.verify(decoded)) {
-                LOGGER.warn("Unable to verify reconnect cookie!");
+            if(token == null) {
+                LOGGER.error("Recceived invalid reconnect cookie!");
                 disconnect(server.getLangManager().getMessage("error.invalid_reconnect", conn.getLanguage(), conn));
                 return;
             }
 
             Backend b;
-            ConfigObject backendIdObj = decoded.getClaim("backend");
-            if (backendIdObj == null) {
+            String backendId = token.payload().getOrDefault("backend", (String) null);
+            if (backendId == null) {
                 // Check for ephemeral backend
-                String ephHost = decoded.getClaimAsString("backend_host");
-                ConfigObject ephPort = decoded.getClaim("backend_port");
-                ConfigObject ephRedirect = decoded.getClaim("backend_redirect");
-                ConfigObject ephHaproxy = decoded.getClaim("backend_haproxy");
+                String ephHost = token.payload().getOrDefault("backend_host", (String) null);
+                ConfigObject ephPort = token.payload().get("backend_port");
+                ConfigObject ephRedirect = token.payload().get("backend_redirect");
+                ConfigObject ephHaproxy = token.payload().get("backend_haproxy");
                 if (ephHost == null
                         || ephPort == null || !ephPort.isNumber()
                         || ephRedirect == null || !ephRedirect.isBoolean()
@@ -279,9 +257,9 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
                         ephHaproxy.asBoolean());
 
             } else {
-                b = server.getBackends().get(backendIdObj.asString());
+                b = server.getBackends().get(backendId);
                 if (b == null) {
-                    LOGGER.warn("Unable to find requested reconnect backend {}!", backendIdObj.asString());
+                    LOGGER.warn("Unable to find requested reconnect backend {}!", backendId);
                     disconnect(server.getLangManager().getMessage("error.invalid_reconnect", conn.getLanguage(), conn));
                     return;
                 }
@@ -643,41 +621,18 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
 
     private void reconnect(Backend b) {
 
-        String host = b.redirect() ? b.hostname() : conn.hostname();
-        int port = b.redirect() ? b.port() : conn.port();
-
-        KeyCodec<PublicKey, PrivateKey> rsa = KeyCodec.RSA_OAEP(server.getReconnectKeyPair());
         String backendId = server.getBackends().getId(b);
-        JWTBuilder builder = new JWTBuilder()
-                .withClaim("hostname", host)
-                .withClaim("port", port)
-                .withClaim("protocol", conn.protocolVersion())
-                .withClaim("username", conn.username())
-                .withClaim("uuid", Objects.toString(conn.uuid()))
-                .withClaim(server.getTokenCache().getIdClaim(), UUID.randomUUID(), Serializer.UUID)
-                .expiresIn(server.getReconnectTimeout())
-                .issuedNow()
-                .issuedBy("midnightproxy");
+        if(backendId == null) backendId = b.toString();
 
-        // Ephemeral Backend
-        if (backendId == null) {
-            backendId = b.toString();
-            builder.withClaim("backend_host", b.hostname())
-                    .withClaim("backend_port", b.port())
-                    .withClaim("backend_redirect", b.redirect())
-                    .withClaim("backend_haproxy", b.haproxy());
-        } else {
-            builder.withClaim("backend", backendId);
-        }
-
-        String str = builder
-                .encrypted(rsa, CryptCodec.A128CBC_HS256())
-                .asString().getOrThrow();
+        String token = server.generateReconnectToken(context, b);
 
         conn.wasReconnected = true;
         LOGGER.info("Reconnecting {} to {}", getUsername(), backendId);
 
-        conn.send(new ClientboundSetCookiePacket(RECONNECT_COOKIE, str.getBytes()));
+        String host = b.redirect() ? b.hostname() : context.getConnection().hostname();
+        int port = b.redirect() ? b.port() : context.getConnection().port();
+
+        conn.send(new ClientboundSetCookiePacket(RECONNECT_COOKIE, token.getBytes()));
         conn.send(new ClientboundTransferPacket(host, port), ChannelFutureListener.CLOSE);
 
     }

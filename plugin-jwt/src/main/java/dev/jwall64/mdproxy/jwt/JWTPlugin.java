@@ -2,8 +2,6 @@ package dev.jwall64.mdproxy.jwt;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.jwt.FileKeyStore;
-import dev.jwall64.jwt.KeyStore;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileWrapper;
@@ -37,7 +35,7 @@ public class JWTPlugin implements Plugin {
         try { Files.createDirectories(keyStoreDir); } catch (IOException e) {
             throw new RuntimeException("Could not create key store directory", e);
         }
-        keyStore = new FileKeyStore(keyStoreDir);
+        keyStore = new KeyStore.Folder(keyStoreDir, proxy.fileCodecRegistry());
 
         proxy.getCommands().register("jwt", new JWTCommand());
         ConnectionCheckType.REGISTRY.tryRegister("jwt", JWTCheck.TYPE);

@@ -2,8 +2,14 @@ package dev.jwall64.mdproxy;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import dev.jwall64.jwt.UsedTokenCache;
+import dev.jwall64.jwt.Algorithm;
+import dev.jwall64.jwt.CryptAlgorithm;
+import dev.jwall64.jwt.JsonWebKey;
+import dev.jwall64.jwt.Jwt;
+import dev.jwall64.jwt.KeyVerifier;
+import dev.jwall64.jwt.TokenValidator;
 import dev.jwall64.mdcfg.ConfigObject;
+import dev.jwall64.mdcfg.ConfigPrimitive;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.codec.FileCodecRegistry;
 import dev.jwall64.mdcfg.codec.FileWrapper;
@@ -11,6 +17,7 @@ import dev.jwall64.mdcfg.serializer.BackSerializer;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdcfg.serializer.SerializeContext;
 import dev.jwall64.mdcfg.serializer.SerializeResult;
+import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.command.CommandExecutor;
 import dev.jwall64.mdproxy.command.ListCommand;
 import dev.jwall64.mdproxy.command.ReloadCommand;
@@ -38,12 +45,14 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
+import javax.annotation.Nullable;
+
 public class ProxyServer implements Proxy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("ProxyServer");
 
     private final KeyPair keyPair;
-    private final KeyPair reconnectKeyPair;
+    private final JsonWebKey reconnectKey;
     private final FileWrapper<ConfigObject> config;
     private final Registry<String, CommandExecutor> commands;
     private final Map<String, Authenticator> authenticators = new HashMap<>();
@@ -51,7 +60,7 @@ public class ProxyServer implements Proxy {
     private final ConsoleHandler console;
     private final LangManager<PartialMessage<String>, Component> langManager;
     private final PluginManagerImpl pluginLoader;
-    private final UsedTokenCache reconnectTokenCache;
+    private final TokenValidator reconnectTokenValidator;
     private final IconCacheImpl iconCache;
     private final int port;
     private final int clientTimeout;
@@ -86,7 +95,16 @@ public class ProxyServer implements Proxy {
         this.config = config;
         this.langManager = langManager;
         this.pluginLoader = pluginLoader;
-        this.reconnectTokenCache = new UsedTokenCache("rcid");
+        this.reconnectTokenValidator = 
+            new TokenValidator.AllOf(List.of(
+                new TokenValidator.ExpectClaims(Map.of(Jwt.CLAIM_ISSUER, new ConfigPrimitive("midnightproxy"))),
+                new TokenValidator.ExpectPresent(List.of("hostname", "port", "username", "uuid", "protocol")),
+                new TokenValidator.AnyOf(List.of(
+                    new TokenValidator.ExpectPresent(List.of("backend")),
+                    new TokenValidator.ExpectPresent(List.of("backend_host", "backend_port", "backend_redirect", "backend_haproxy"))
+                )),
+                new TokenValidator.SingleUse("rcid", 60 * 1000)
+            ));
         this.fileCodecRegistry = registry;
 
         this.playerList = new PlayerListImpl();
@@ -105,7 +123,11 @@ public class ProxyServer implements Proxy {
         this.clientTimeout = conf.getInt("client_timeout_ms");
 
         this.keyPair = CryptUtil.generateKeyPair();
-        this.reconnectKeyPair = CryptUtil.generateKeyPair();
+        this.reconnectKey = JsonWebKey.builder()
+            .withAlgorithm(Algorithm.ECDH_ES_A256KW)
+            .withUse(Algorithm.ECDH_ES_A256KW.use())
+            .generate(Algorithm.ECDH_ES_A256KW.type());
+
         this.commands = Registry.createStringRegistry();
 
         this.commands.register("stop", new StopCommand());
@@ -342,12 +364,42 @@ public class ProxyServer implements Proxy {
         return keyPair;
     }
 
-    public KeyPair getReconnectKeyPair() {
-        return reconnectKeyPair;
+
+    public String generateReconnectToken(ConnectionContext context, Backend backend) {
+
+        Jwt.Builder builder = Jwt.builder()
+            .withClaim("hostname", backend.redirect() ? backend.hostname() : context.getConnection().hostname())
+            .withClaim("port", backend.redirect() ? backend.port() : context.getConnection().port())
+            .withClaim("protocol", context.getConnection().protocolVersion())
+            .withClaim("username", context.getConnection().username())
+            .withClaim("uuid", Objects.toString(context.getConnection().uuid()))
+            .withClaim("rcid", UUID.randomUUID(), Serializer.UUID)
+            .expiresIn(getReconnectTimeout())
+            .withIssuer("midnightproxy");
+
+        String backendId = getBackends().getId(backend);
+        if(backendId == null) {
+            builder.withClaim("backend_host", backend.hostname())
+                    .withClaim("backend_port", backend.port())
+                    .withClaim("backend_redirect", backend.redirect())
+                    .withClaim("backend_haproxy", backend.haproxy());
+        } else {
+            builder.withClaim("backend", backendId);
+        }
+
+        return builder.buildEncrypted(reconnectKey, reconnectKey.algorithm(), CryptAlgorithm.A256GCM);
     }
 
-    public UsedTokenCache getTokenCache() {
-        return reconnectTokenCache;
+    @Nullable
+    public Jwt validateReconnect(String tokenStr) {
+
+        Jwt token;
+        try {
+            token = Jwt.parseAndVerify(tokenStr, reconnectKey, KeyVerifier.DEFAULT);
+        } catch(Exception ex) { return null; }
+
+        if(!reconnectTokenValidator.validate(token)) return null;
+        return token;
     }
 
     public int getClientTimeout() {
