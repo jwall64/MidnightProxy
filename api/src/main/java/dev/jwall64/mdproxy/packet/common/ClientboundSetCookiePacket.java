@@ -8,8 +8,10 @@ import dev.jwall64.mdcfg.registry.Identifier;
 public record ClientboundSetCookiePacket(Identifier id, byte[] data) implements Packet<ClientboundPacketHandler> {
 
     private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
+            .afterVersionInPhase(777, 325, ProtocolPhase.CONFIG, 11)
             .inPhase(ProtocolPhase.CONFIG, 10)
-            .afterVersion(774, 259, 120)
+            .afterVersion(777, 333, 122)
+            .afterVersion(774, 279, 120)
             .afterVersion(773, 259, 118)
             .afterVersion(770, 229, 113)
             .orElse(114)

@@ -11,6 +11,8 @@ public record ServerboundResourcePackStatusPacket(UUID packId, Action action)
 
     private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
             .inPhase(ProtocolPhase.CONFIG, 6)
+            .afterVersion(777, 325, 50)
+            .afterVersion(774, 279, 49)
             .afterVersion(771, 245, 48)
             .orElse(47)
             .build();

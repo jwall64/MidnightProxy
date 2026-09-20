@@ -19,6 +19,7 @@ public class WhitelistPlugin implements Plugin {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("WhitelistPlugin");
     private static final ConfigSection DEFAULT_CONFIG = new ConfigSection()
+            .with("source", "config")
             .with("lists", new ConfigSection());
     private final Registry<String, Whitelist> lists = Registry.createStringRegistry();
     private FileWrapper<ConfigObject> config;
@@ -41,33 +42,42 @@ public class WhitelistPlugin implements Plugin {
             }
 
             if(args[1].equals("reload")) {
-                reload();
+                reload(proxy);
                 sender.sendMessage("Whitelists reloaded");
             } else {
                 sender.sendMessage("Usage: whitelist [reload]");
             }
         });
 
-        reload();
+        reload(proxy);
     }
 
     public Registry<String, Whitelist> getLists() {
         return lists;
     }
 
-    public void reload() {
+    public void reload(Proxy proxy) {
 
         lists.forEach(Whitelist::invalidate);
 
         lists.clear();
         config.load();
 
-        Whitelist.SERIALIZER
-                .filteredMapOf((key, err) -> LOGGER.error("Unable to deserialize a whitelist with key {}! {}", key, err))
-                .fieldOf("lists")
-                .deserialize(ConfigContext.INSTANCE, config.getRoot())
-                .getOrThrow()
-                .forEach(lists::register);
+        String source = config.getRoot().asSection().getString("source");
+        if(source.equals("config")) {
+            Whitelist.SERIALIZER
+                    .filteredMapOf((key, err) -> LOGGER.error("Unable to deserialize a whitelist with key {}! {}", key, err))
+                    .fieldOf("lists")
+                    .deserialize(ConfigContext.INSTANCE, config.getRoot())
+                    .getOrThrow()
+                    .forEach(lists::register);
+
+        } else if(source.equals("sql")) {
+            ConfigSection db = config.getRoot().asSection().getOptional("sql").filter(ConfigObject::isSection).map(ConfigObject::asSection).orElse(new ConfigSection().with("preset", "default"));
+
+            Tables.reload(proxy, lists, db);
+
+        }
     }
 
 }

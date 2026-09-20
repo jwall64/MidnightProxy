@@ -7,7 +7,9 @@ import dev.jwall64.mdproxy.util.PacketBufferUtil;
 public record ClientboundTransferPacket(String host, int port) implements Packet<ClientboundPacketHandler> {
 
     private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
+            .afterVersionInPhase(777, 325, ProtocolPhase.CONFIG, 12)
             .inPhase(ProtocolPhase.CONFIG, 11)
+            .afterVersion(777, 259, 132)
             .afterVersion(774, 259, 129)
             .afterVersion(773, 259, 127)
             .orElse(122)

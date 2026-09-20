@@ -43,5 +43,21 @@ public class Whitelist {
             Whitelist::new
     );
 
+    public static Builder builder() { return new Builder(); }
+
+    public static class Builder {
+
+        public Builder() { }
+
+        private final List<UUID> uuids = new ArrayList<>();
+        private final List<String> usernames = new ArrayList<>();
+
+        public Builder add(UUID uuid) { uuids.add(uuid); return this; }
+        public Builder add(String username) { usernames.add(username); return this; }
+
+        public Whitelist build() { return new Whitelist(uuids, usernames); }
+
+    }
+
 
 }

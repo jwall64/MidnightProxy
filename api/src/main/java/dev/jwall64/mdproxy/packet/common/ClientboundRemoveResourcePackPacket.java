@@ -11,6 +11,8 @@ public record ClientboundRemoveResourcePackPacket(@Nullable UUID packId) impleme
 
     private static final VersionSelector<Integer> ID_SELECTOR = VersionSelector.<Integer>builder()
             .inPhase(ProtocolPhase.CONFIG, 8)
+            .afterVersion(777, 259, 81)
+            .afterVersion(775, 259, 80)
             .afterVersion(773, 259, 78)
             .afterVersion(770, 229, 73)
             .orElse(74)
