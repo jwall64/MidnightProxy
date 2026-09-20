@@ -65,7 +65,7 @@ public class ConnectionRequirement extends Requirement<ConnectionContext> {
 
     public static final Serializer<ConnectionRequirement> SERIALIZER = 
         Requirement.serializer(ConnectionCheckType.REGISTRY, ConnectionRequirement::new).and(
-            Serializer.STRING.mapOf().fieldOf("success_meta").and(Serializer.STRING.mapOf().fieldOf("fail_meta"))
+            Serializer.STRING.mapOf().optionalFieldOf("success_meta", Collections.emptyMap()).and(Serializer.STRING.mapOf().optionalFieldOf("fail_meta", Collections.emptyMap()))
         ).flatMap(req -> {
             return new Tuples.T2<>(req, new Tuples.T2<>(req.successMeta, req.failMeta));
         }, t2 -> {

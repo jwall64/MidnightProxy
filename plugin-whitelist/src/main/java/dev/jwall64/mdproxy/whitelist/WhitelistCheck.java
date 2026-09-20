@@ -37,7 +37,9 @@ public class WhitelistCheck implements ConnectionCheck {
 
         if(whitelist == null || whitelist.isInvalid()) {
             whitelist = conn.getProxy().getPluginManager().get(WhitelistPlugin.class).getLists().get(listId);
-            if(whitelist == null) return false;
+            if(whitelist == null) {
+                return false;
+            }
         }
 
         return whitelist.isWhitelisted(conn.getConnection());

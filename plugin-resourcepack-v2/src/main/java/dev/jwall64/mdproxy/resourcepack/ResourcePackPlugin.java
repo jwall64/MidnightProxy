@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import dev.jwall64.mdcfg.ConfigList;
 import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.mdcfg.serializer.ConfigContext;
 import dev.jwall64.mdproxy.Proxy;
@@ -118,7 +119,7 @@ public class ResourcePackPlugin implements Plugin {
         }
 
         this.registries.add(new ResourcePackRegistry.ConfigBased(
-            proxy.fileCodecRegistry().findOrCreate(ConfigContext.INSTANCE, "packs", configFolder), 0)
+            proxy.fileCodecRegistry().findOrCreate(ConfigContext.INSTANCE, "packs", configFolder, new ConfigList()), 0)
         );
 
         this.registries.add(new ResourcePackRegistry.FileBased(

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import dev.jwall64.mdcfg.ConfigList;
+import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
 import dev.jwall64.mdcfg.registry.Identifier;
 import dev.jwall64.mdproxy.RegistryData.TagList;
@@ -41,6 +42,7 @@ public final class DynamicRegistries {
 
     public static final ConfigSection DUMMY_TRIM_MATERIAL = new ConfigSection()
                 .with("asset_name", "amethyst")
+                .with("palette_id", "minecraft:trim/amethyst")
                 .with("description", "dummy");
 
     public static final ConfigSection DUMMY_JUKEBOX_SONG = new ConfigSection()
@@ -55,6 +57,17 @@ public final class DynamicRegistries {
                 .with("range", 1.0)
                 .with("use_duration", 1.0);
 
+    public static final ConfigObject DUMMY_BLOCK_TRANSFORMER = new ConfigList()
+        .append(new ConfigSection()
+                .with("block_state_provider", new ConfigSection()
+                    .with("type", "simple")
+                    .with("state", new ConfigSection()
+                        .with("id", "minecraft:dirt"))
+                    )
+                );
+    
+    public static final ConfigObject DUMMY_POT_PATTERN = new ConfigSection()
+        .with("asset_id", "minecraft:angler_pottery_pattern");
 
     public static final List<RegistryData> REQUIRED_REGISTRIES = List.of(
         // Needs some tags for components
@@ -200,6 +213,7 @@ public final class DynamicRegistries {
             .add("tears", DUMMY_JUKEBOX_SONG)
             .add("wait", DUMMY_JUKEBOX_SONG)
             .add("ward", DUMMY_JUKEBOX_SONG)
+            .add("bounce", DUMMY_JUKEBOX_SONG)
         .build(),
 
         RegistryData.builder("trim_material")
@@ -227,6 +241,39 @@ public final class DynamicRegistries {
             .add("yearn_goat_horn", DUMMY_INSTRUMENT)
             .build()
     );
+
+    public static final RegistryData BLOCK_TRANSFORMERS = RegistryData.builder("block_transformer")
+        .add("axe", DUMMY_BLOCK_TRANSFORMER)
+        .add("hoe", DUMMY_BLOCK_TRANSFORMER)
+        .add("shovel", DUMMY_BLOCK_TRANSFORMER)
+        .build();
+
+    public static final RegistryData POT_PATTERNS = RegistryData.builder("decorated_pot_pattern")
+        .add("angler", DUMMY_POT_PATTERN)
+        .add("archer", DUMMY_POT_PATTERN)
+        .add("arms_up", DUMMY_POT_PATTERN)
+        .add("blade", DUMMY_POT_PATTERN)
+        .add("brewer", DUMMY_POT_PATTERN)
+        .add("burn", DUMMY_POT_PATTERN)
+        .add("danger", DUMMY_POT_PATTERN)
+        .add("explorer", DUMMY_POT_PATTERN)
+        .add("flow", DUMMY_POT_PATTERN)
+        .add("friend", DUMMY_POT_PATTERN)
+        .add("guster", DUMMY_POT_PATTERN)
+        .add("heart", DUMMY_POT_PATTERN)
+        .add("heartbreak", DUMMY_POT_PATTERN)
+        .add("howl", DUMMY_POT_PATTERN)
+        .add("miner", DUMMY_POT_PATTERN)
+        .add("mourner", DUMMY_POT_PATTERN)
+        .add("plenty", DUMMY_POT_PATTERN)
+        .add("prize", DUMMY_POT_PATTERN)
+        .add("scrape", DUMMY_POT_PATTERN)
+        .add("sheaf", DUMMY_POT_PATTERN)
+        .add("shelter", DUMMY_POT_PATTERN)
+        .add("skull", DUMMY_POT_PATTERN)
+        .add("snort", DUMMY_POT_PATTERN)
+        .build();
+ 
  
     public static final Map<Identifier, List<TagList>> REQUIRED_TAGS = Map.of(
         new Identifier("minecraft", "damage_type"), List.of(

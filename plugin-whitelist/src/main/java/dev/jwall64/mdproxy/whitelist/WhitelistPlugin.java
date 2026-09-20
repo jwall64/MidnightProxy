@@ -73,7 +73,7 @@ public class WhitelistPlugin implements Plugin {
                     .forEach(lists::register);
 
         } else if(source.equals("sql")) {
-            ConfigSection db = config.getRoot().asSection().getOptional("sql").filter(ConfigObject::isSection).map(ConfigObject::asSection).orElse(new ConfigSection().with("preset", "default"));
+            ConfigSection db = config.getRoot().asSection().getOptional("sql").filter(ConfigObject::isSection).map(ConfigObject::asSection).orElse(new ConfigSection().with("preset", "default").with("table_prefix", "whitelist_"));
 
             Tables.reload(proxy, lists, db);
 

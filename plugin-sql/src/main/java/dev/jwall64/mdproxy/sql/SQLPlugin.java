@@ -34,7 +34,7 @@ public class SQLPlugin implements Plugin {
     public void initialize(Proxy proxy) {
 
         Path configFolder =
-            proxy.getPluginManager().configFolder().resolve("whitelist");
+            proxy.getPluginManager().configFolder().resolve("sql");
         try {
             Files.createDirectories(configFolder);
         } catch (IOException e) {

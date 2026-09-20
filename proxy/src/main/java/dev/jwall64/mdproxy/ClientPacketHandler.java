@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import dev.jwall64.jwt.Jwt;
 import dev.jwall64.mdcfg.ConfigObject;
 import dev.jwall64.mdcfg.ConfigSection;
-import dev.jwall64.mdcfg.serializer.SerializeResult;
-import dev.jwall64.mdcfg.serializer.Serializer;
 import dev.jwall64.mdproxy.netty.*;
 import dev.jwall64.mdproxy.packet.PacketRegistry;
 import dev.jwall64.mdproxy.packet.ProtocolPhase;
@@ -339,9 +337,13 @@ public class ClientPacketHandler implements ServerboundPacketHandler {
             // As of 26.1, clients will disconnect if they don't receive certain registry data before the finish configuration packet. 
             if(conn.protocolVersion() > 774) {
                 // Send required registries
-             
+
                 for(RegistryData data : DynamicRegistries.REQUIRED_REGISTRIES) {
                     conn.send(new ClientboundRegistryDataPacket(data));
+                }
+                if(conn.protocolVersion() > 776) {
+                    conn.send(new ClientboundRegistryDataPacket(DynamicRegistries.BLOCK_TRANSFORMERS));
+                    conn.send(new ClientboundRegistryDataPacket(DynamicRegistries.POT_PATTERNS));
                 }
                 conn.send(new ClientboundUpdateTagsPacket(ImmutableMap.copyOf(DynamicRegistries.REQUIRED_TAGS)));
             }

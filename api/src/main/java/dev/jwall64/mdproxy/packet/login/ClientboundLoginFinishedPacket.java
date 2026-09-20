@@ -9,6 +9,7 @@ import dev.jwall64.mdproxy.packet.ProtocolPhase;
 import dev.jwall64.mdproxy.util.PacketBufferUtil;
 
 import java.util.Collection;
+import java.util.UUID;
 
 public record ClientboundLoginFinishedPacket(PlayerProfile gameProfile) implements Packet<ClientboundPacketHandler> {
 
@@ -43,6 +44,8 @@ public record ClientboundLoginFinishedPacket(PlayerProfile gameProfile) implemen
 
         if(version < 768) {
             buf.writeBoolean(true); // Strict error handling
+        } else if(version >= 776) {
+            PacketBufferUtil.writeUUID(buf, UUID.randomUUID());
         }
     }
 }
