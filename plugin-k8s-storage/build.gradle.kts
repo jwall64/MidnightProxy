@@ -23,7 +23,7 @@ dependencies {
 val copyOutputTask = tasks.register<Copy>("copyOutputFiles") {
 
     dependsOn(tasks.jar)
-    from(tasks.jar.get().archiveFile)
+    from(tasks.shadowJar.get().archiveFile)
 
     val output = rootDir.resolve("build").resolve("plugins")
 

@@ -51,8 +51,24 @@ spec:
                   type: string
                   nullable: true
                 requirement:
-                  type: string
+                  type: object
                   nullable: true
+                  x-kubernetes-preserve-unknown-fields: true
+                  properties:
+                    type:
+                      type: string
+                    invert:
+                      type: boolean
+                    success_meta:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      default: {}
+                    fail_meta:
+                      type: object
+                      additionalProperties:
+                        type: string
+                      default: {}
   scope: Namespaced
   names:
     plural: mcstatusentries
